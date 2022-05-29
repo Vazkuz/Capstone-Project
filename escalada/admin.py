@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import User, ClassType, ClimbBooking
+from .models import User, ClassType, ClimbClass
 
-class ClimbBookingAdmin(admin.ModelAdmin):
+class ClimbClassAdmin(admin.ModelAdmin):
     list_display = ('id', 'instructor', 'classType')
 
 class ClassTypeAdmin(admin.ModelAdmin):
@@ -11,4 +11,4 @@ class ClassTypeAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(User)
 admin.site.register(ClassType, ClassTypeAdmin)
-admin.site.register(ClimbBooking, ClimbBookingAdmin)
+admin.site.register(ClimbClass, ClimbClassAdmin)

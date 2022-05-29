@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Escalada</title>
-    </head>
+{% extends 'escalada/layout.html' %}
+{% block body %}
     <body>
-        This is your climbing site!
+        <h3>This is your climbing site!</h3>
+        {% for availableClass in availableClasses %}
+            {{availableClass.instructor}}
+        {% empty %}
+            <em>No classes available.</em>
+        {% endfor %}
     </body>
-</html>
+{% endblock body %}
