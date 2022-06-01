@@ -7,13 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, User
 from .admin import ClimbClassForm
-from django.forms import ModelForm
-
-class ClassForm(ModelForm):
-    class Meta:
-        model = ClimbClass
-        fields = ['classType', 'lessonDay', 'climbers']
-        
+from django.forms import ModelForm        
 
 # Create your views here.
 def index(request):
@@ -24,7 +18,7 @@ def index(request):
 
 @staff_member_required(login_url=reverse_lazy('index'))
 def createClass(request):
-    newClassForm = ClassForm()
+    newClassForm = ClimbClassForm()
     return render(request, "escalada/create_class.html", {
         "newClassForm": newClassForm,
         "errorInCreation": False
@@ -40,13 +34,10 @@ def newClass(request):
             newClass = ClimbClass(classType=classType, lessonDay=lessonDay)
         else:
             newClass = ClimbClass(classType=classType)
-        newClass.save()
-        climbers = request.POST.getlist('climbers')
-        newClass.climbers.set(climbers)
+            
         if class_form.is_valid():
             newClass.save()
         else:
-            newClass.delete()
             return render(request, "escalada/error_in_newclass.html")
         return HttpResponseRedirect(reverse("index"))
 

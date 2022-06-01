@@ -50,10 +50,13 @@ class ClassType(models.Model):
         return self.isRecurring
     
 class ClimbClass(models.Model):
-    
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, related_name= "class_type")
     lessonDay = MultiSelectField(choices = LessonDay, blank=True)
-    climbers = models.ManyToManyField(User, null=True,blank=True)
+    # startHour = models.IntegerField(default=36,
+    #     validators=[
+    #         MaxValueValidator(0),
+    #         MinValueValidator(47)
+    #     ]) # startHour is something between 0 and 47. The real hour is half startHour: 0 is 00:00h, 1 is 00:30h, 2 is 01:00h and so on...
 
     
 class Post(models.Model):

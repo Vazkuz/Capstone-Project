@@ -21,14 +21,14 @@ class ClimbClassForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        maxClimbers = cleaned_data.get('classType').getMaxClimbers()
+        # maxClimbers = cleaned_data.get('classType').getMaxClimbers()
         lessonsPerWeek = cleaned_data.get('classType').getLessonsPerWeek()
         is_Recurring = cleaned_data.get('classType').is_Recurring()
         numberOfLessonsPerWeek = len(cleaned_data.get('lessonDay'))
         
-        if cleaned_data.get('climbers'):
-            if cleaned_data.get('climbers').count() > maxClimbers:
-                raise ValidationError(f"There can't be more than {maxClimbers} climbers for this type of lesson.")
+        # if cleaned_data.get('climbers'):
+        #     if cleaned_data.get('climbers').count() > maxClimbers:
+        #         raise ValidationError(f"There can't be more than {maxClimbers} climbers for this type of lesson.")
 
         if cleaned_data.get('lessonDay') or is_Recurring:
             if numberOfLessonsPerWeek != lessonsPerWeek and is_Recurring:
