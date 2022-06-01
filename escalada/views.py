@@ -26,12 +26,13 @@ def index(request):
 def createClass(request):
     newClassForm = ClassForm()
     return render(request, "escalada/create_class.html", {
-        "newClassForm": newClassForm
+        "newClassForm": newClassForm,
+        "errorInCreation": False
     })
     
 @staff_member_required(login_url=reverse_lazy('index'))
 def newClass(request):
-    class_form = ClimbClassForm(request.POST) #AQUI HAY QUE VER CÓMO QUITAR EL LESSONDAY PARA CUANDO LA CLASE NO ES RECURRENTE!
+    class_form = ClimbClassForm(request.POST)
     if request.method == 'POST':
         classType = ClassType.objects.get(pk=request.POST["classType"])
         lessonDay = request.POST.getlist('lessonDay')
@@ -43,15 +44,10 @@ def newClass(request):
         climbers = request.POST.getlist('climbers')
         newClass.climbers.set(climbers)
         if class_form.is_valid():
-            # if request.POST["climbers"]:
-            #     newClass = ClimbClass(classType=classType, lessonDay=lessonDay)
-            #     # newClass = ClimbClass(classType=classType, lessonDay=lessonDay, climbers=request.POST["climbers"])
-            # else:
-            #     newClass = ClimbClass(classType=classType, lessonDay=lessonDay)
             newClass.save()
         else:
             newClass.delete()
-            print("CONCHATUMAREEEEE") # Cambiar esto a que muestre algo que te diga que te hueveaste xd
+            return render(request, "escalada/error_in_newclass.html")
         return HttpResponseRedirect(reverse("index"))
 
 def login_view(request):
