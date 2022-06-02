@@ -56,6 +56,12 @@ class ClimbClass(models.Model):
     lessonDay = MultiSelectField(choices = LessonDay, blank=True)
     begin_time = models.TimeField(default=time(00, 00))
     
+    def __str__(self):
+        return f'{self.classType} at {self.begin_time} ({self.lessonDay})'
+    
+    def getLessonDays(self):
+        return self.lessonDay
+    
 class Coupon(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE)
     numberOfClasses = models.IntegerField(default=4,
@@ -68,7 +74,11 @@ class Coupon(models.Model):
         return f'{self.numberOfClasses} ({self.classType}) at {self.price} soles'
     
 class Enrollment(models.Model):
-    pass
+    climber = models.ManyToManyField(User)
+    climbClass = models.ForeignKey(ClimbClass, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
+    begin_date = models.DateField(default=date.today)
+    class_date = models.DateField(default=date.today)
     
 class Post(models.Model):
     text = models.CharField(max_length=500)

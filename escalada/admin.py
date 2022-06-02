@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import User, ClassType, ClimbClass, Coupon, Enrollment
-from .forms import ClimbClassForm
+from .forms import ClimbClassForm, EnrollmentForm
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -14,10 +14,14 @@ class ClassTypeAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(ClassType, ClassTypeAdmin)
 admin.site.register(Coupon)
-admin.site.register(Enrollment)
             
 
 @admin.register(ClimbClass)
 class ClimbClassAdmin(admin.ModelAdmin):
     form = ClimbClassForm
     list_display = ('id', 'classType', 'lessonDay')
+    
+@admin.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    form = EnrollmentForm
+    list_display = ('coupon', 'begin_date', 'class_date')

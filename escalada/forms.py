@@ -1,7 +1,8 @@
+from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass
+from .models import ClimbClass, Enrollment
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -28,7 +29,19 @@ class ClimbClassForm(forms.ModelForm):
 
         if cleaned_data.get('lessonDay') or is_Recurring:
             if numberOfLessonsPerWeek != lessonsPerWeek and is_Recurring:
-                print("DEBERÍA LLEGA AQUÍ")
                 raise ValidationError(f"The number of lessons per week must be {lessonsPerWeek}")
         else:
             print("Lesson Day is not clean.")
+            
+class EnrollmentForm(forms.ModelForm):
+    class Meta:
+        model = Enrollment
+        fields = '__all__'
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        lessonDays = cleaned_data.get('climbClass').getLessonDays()
+        
+        if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
+            raise ValidationError(f"The begin date of the class must be: {lessonDays}")
+            
