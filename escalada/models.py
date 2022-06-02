@@ -1,8 +1,9 @@
+from pyexpat import model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
-from datetime import datetime, date
+from datetime import datetime, date, time
 from multiselectfield import MultiSelectField
 
 MONDAY = 0
@@ -35,6 +36,7 @@ class ClassType(models.Model):
         ])
     maxClimbers = models.IntegerField(default=1)
     onlyStaffEditable = models.BooleanField(default=True)
+    durationInHours = models.IntegerField(default=2)
     isRecurring = models.BooleanField(default=False)
     
     def __str__(self):
@@ -52,12 +54,21 @@ class ClassType(models.Model):
 class ClimbClass(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, related_name= "class_type")
     lessonDay = MultiSelectField(choices = LessonDay, blank=True)
-    # startHour = models.IntegerField(default=36,
-    #     validators=[
-    #         MaxValueValidator(0),
-    #         MinValueValidator(47)
-    #     ]) # startHour is something between 0 and 47. The real hour is half startHour: 0 is 00:00h, 1 is 00:30h, 2 is 01:00h and so on...
-
+    begin_time = models.TimeField(default=time(00, 00))
+    
+class Coupon(models.Model):
+    classType = models.ForeignKey(ClassType, on_delete=models.CASCADE)
+    numberOfClasses = models.IntegerField(default=4,
+        validators=[
+            MinValueValidator(1)
+        ])
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    def __str__(self):
+        return f'{self.numberOfClasses} ({self.classType}) at {self.price} soles'
+    
+class Enrollment(models.Model):
+    pass
     
 class Post(models.Model):
     text = models.CharField(max_length=500)
