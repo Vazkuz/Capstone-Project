@@ -44,4 +44,7 @@ class EnrollmentForm(forms.ModelForm):
         
         if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
             raise ValidationError(f"The begin date of the class must be: {lessonDays}")
-            
+        
+        if cleaned_data.get('begin_date') < dt.date.today():
+            raise ValidationError(f"The begin date can't be in the past")
+        
