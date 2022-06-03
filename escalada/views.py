@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, Coupon, Enrollment, User
 from .forms import ClimbClassForm, EnrollmentForm, EnrollmentFormStudents
+from datetime import datetime, timedelta
 
 # Create your views here.
 def index(request):
@@ -101,23 +102,29 @@ def enroll_success(request):
     class_form = EnrollmentFormStudents(request.POST)
     climbClass = request.POST.get('climbClass')
     coupon = request.POST.get('coupon')
-    begin_date = request.POST.get('begin_date') 
+    begin_date = request.POST.get('begin_date')
+    begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
+    numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
     
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
-            # Check if the enrollment already exists:
-            if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, begin_date=begin_date).count() > 0:
-                # If the class already exists, then the climber is added to that class:
-                enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, begin_date=begin_date)
-                enrollment.climbers.add(climber)
-            else:
-                climbClass = ClimbClass.objects.get(pk=climbClass)
-                coupon = Coupon.objects.get(pk=coupon)
-                # climber = set(climber)
-                newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, begin_date=begin_date)
-                newEnrollment.save()
-                newEnrollment.climbers.add(climber)
+            for i in range(numberOfLessons):
+                EnrollToLesson(climbClass, coupon, begin_date,begin_date_DF + timedelta(days=i), climber)
     else:
         return render(request, "escalada/error_in_newclass.html")
     return HttpResponseRedirect(reverse("index"))
+
+def EnrollToLesson(climbClass, coupon, begin_date, class_date,climber):
+    # Check if the enrollment already exists:
+    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date).count() > 0:
+        # If the class already exists, then the climber is added to that lesson:
+        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date)
+        enrollment.climbers.add(climber)
+    else:
+        # If not, then the lesson is created and the climber enrolled to it
+        climbClass = ClimbClass.objects.get(pk=climbClass)
+        coupon = Coupon.objects.get(pk=coupon)
+        newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date)
+        newEnrollment.save()
+        newEnrollment.climbers.add(climber)

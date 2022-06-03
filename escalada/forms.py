@@ -39,17 +39,34 @@ class EnrollmentForm(forms.ModelForm):
         lessonDays = cleaned_data.get('climbClass').getLessonDays()
         maxNumberOfClimbers = cleaned_data.get('coupon').getMaxClimbers()
         
+        ##################################### VALIDATIONS #####################################
+        # The begin date has to be on a weekday of class
         if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
             raise ValidationError(f"The begin date of the class must be: {lessonDays}")
         
+        # # The class dates have to be on a weekday of class
+        # if cleaned_data.get('class_date').strftime('%A').upper() not in str(lessonDays).upper():
+        #     raise ValidationError(f"Class dates must be: {lessonDays}")
+        
+        # The begin date has to be set today or in the future, not in the past
         if cleaned_data.get('begin_date') < dt.date.today():
             raise ValidationError(f"The begin date can't be in the past")
         
+        # # The class dates have to be the begin date or days after that
+        # if cleaned_data.get('class_date') < cleaned_data.get('begin_date'):
+        #     raise ValidationError(f"Class dates have to be the begin date or after.")
+        
+        # There can't be more climbers than the maximum set for the class type
         if cleaned_data.get('climbers'):
             if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
                 raise ValidationError(f"There can't be more than {maxNumberOfClimbers} climbers for this type of lesson.")
-        
+        #######################################################################################
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 class EnrollmentFormStudents(EnrollmentForm):
+    begin_date = forms.DateField(widget=DateInput)
     class Meta:
         model = Enrollment
-        exclude = ('climbers',)
+        exclude = ('climbers', 'class_date', )
