@@ -70,11 +70,14 @@ class Coupon(models.Model):
         ])
     price = models.DecimalField(max_digits=6, decimal_places=2)
     
+    def getMaxClimbers(self):
+        return self.classType.getMaxClimbers()
+    
     def __str__(self):
         return f'{self.numberOfClasses} ({self.classType}) at {self.price} soles'
     
 class Enrollment(models.Model):
-    climber = models.ManyToManyField(User)
+    climbers = models.ManyToManyField(User)
     climbClass = models.ForeignKey(ClimbClass, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
     begin_date = models.DateField(default=date.today)

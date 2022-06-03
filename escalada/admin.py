@@ -30,4 +30,4 @@ class ClimbClassAdmin(admin.ModelAdmin):
 class EnrollmentAdmin(admin.ModelAdmin):
     form = EnrollmentForm
     list_display = ('id', 'coupon', 'begin_date', 'class_date')
-    actions = [duplicate_event]
+    # actions = [duplicate_event]

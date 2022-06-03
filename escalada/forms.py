@@ -22,10 +22,6 @@ class ClimbClassForm(forms.ModelForm):
         lessonsPerWeek = cleaned_data.get('classType').getLessonsPerWeek()
         is_Recurring = cleaned_data.get('classType').is_Recurring()
         numberOfLessonsPerWeek = len(cleaned_data.get('lessonDay'))
-        
-        # if cleaned_data.get('climbers'):
-        #     if cleaned_data.get('climbers').count() > maxClimbers:
-        #         raise ValidationError(f"There can't be more than {maxClimbers} climbers for this type of lesson.")
 
         if cleaned_data.get('lessonDay') or is_Recurring:
             if numberOfLessonsPerWeek != lessonsPerWeek and is_Recurring:
@@ -41,10 +37,15 @@ class EnrollmentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         lessonDays = cleaned_data.get('climbClass').getLessonDays()
+        maxNumberOfClimbers = cleaned_data.get('coupon').getMaxClimbers()
         
         if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
             raise ValidationError(f"The begin date of the class must be: {lessonDays}")
         
         if cleaned_data.get('begin_date') < dt.date.today():
             raise ValidationError(f"The begin date can't be in the past")
+        
+        if cleaned_data.get('climbers'):
+            if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
+                raise ValidationError(f"There can't be more than {maxNumberOfClimbers} climbers for this type of lesson.")
         
