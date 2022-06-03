@@ -5,9 +5,8 @@ from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import ClassType, ClimbClass, User
-from .admin import ClimbClassForm
-from django.forms import ModelForm        
+from .models import ClassType, ClimbClass, Coupon, Enrollment, User
+from .forms import ClimbClassForm, EnrollmentForm, EnrollmentFormStudents
 
 # Create your views here.
 def index(request):
@@ -89,3 +88,36 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "escalada/register.html")
+
+@login_required
+def enroll(request):
+    enroll_form = EnrollmentFormStudents()
+    return render(request, "escalada/enroll.html", {
+        "enroll_form": enroll_form
+    })
+    
+@login_required
+def enroll_success(request):
+    class_form = EnrollmentFormStudents(request.POST)
+    climbClass = request.POST.get('climbClass')
+    coupon = request.POST.get('coupon')
+    begin_date = request.POST.get('begin_date') 
+    
+    if class_form.is_valid():
+        if request.method == 'POST':
+            climber = request.user
+            # Check if the enrollment already exists:
+            if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, begin_date=begin_date).count() > 0:
+                # If the class already exists, then the climber is added to that class:
+                enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, begin_date=begin_date)
+                enrollment.climbers.add(climber)
+            else:
+                climbClass = ClimbClass.objects.get(pk=climbClass)
+                coupon = Coupon.objects.get(pk=coupon)
+                # climber = set(climber)
+                newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, begin_date=begin_date)
+                newEnrollment.save()
+                newEnrollment.climbers.add(climber)
+    else:
+        return render(request, "escalada/error_in_newclass.html")
+    return HttpResponseRedirect(reverse("index"))

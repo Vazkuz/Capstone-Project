@@ -49,3 +49,7 @@ class EnrollmentForm(forms.ModelForm):
             if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
                 raise ValidationError(f"There can't be more than {maxNumberOfClimbers} climbers for this type of lesson.")
         
+class EnrollmentFormStudents(EnrollmentForm):
+    class Meta:
+        model = Enrollment
+        exclude = ('climbers',)

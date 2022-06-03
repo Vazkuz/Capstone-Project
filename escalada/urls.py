@@ -10,4 +10,6 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("createClass", views.createClass, name="createClass"),
     path("newClass", views.newClass, name="newClass"),
+    path("enroll", views.enroll, name="enroll"),
+    path("enroll_success", views.enroll_success, name="enroll_success")
 ]
