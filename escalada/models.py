@@ -64,7 +64,7 @@ class ClimbClass(models.Model):
     
 class Coupon(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE)
-    numberOfLessons = models.IntegerField(default=4,
+    numberOfWeeks = models.IntegerField(default=4,
         validators=[
             MinValueValidator(1)
         ])
@@ -74,10 +74,10 @@ class Coupon(models.Model):
         return self.classType.getMaxClimbers()
     
     def getNumberOfClasses(self):
-        return self.numberOfLessons
+        return self.numberOfWeeks * self.classType.getLessonsPerWeek()
     
     def __str__(self):
-        return f'{self.numberOfLessons} ({self.classType}) at {self.price} soles'
+        return f'{self.numberOfWeeks} ({self.classType}) at {self.price} soles'
     
 class Enrollment(models.Model):
     climbers = models.ManyToManyField(User)

@@ -106,6 +106,11 @@ def enroll_success(request):
     begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
     numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
     
+    print("________________________________________________________________________________________")
+    print(numberOfLessons)
+    print("________________________________________________________________________________________")
+
+    
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
