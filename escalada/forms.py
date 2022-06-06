@@ -60,6 +60,9 @@ class EnrollmentForm(forms.ModelForm):
         if cleaned_data.get('climbers'):
             if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
                 raise ValidationError(f"There can't be more than {maxNumberOfClimbers} climbers for this type of lesson.")
+            
+        if cleaned_data.get('climbClass').getClassType() != cleaned_data.get('coupon').getClassType():
+            raise ValidationError(f'The type of the class does not coincide with the type of the coupon selected.')
         #######################################################################################
 
 class DateInput(forms.DateInput):

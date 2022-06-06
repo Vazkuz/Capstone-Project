@@ -62,6 +62,9 @@ class ClimbClass(models.Model):
     def getLessonDays(self):
         return self.lessonDay
     
+    def getClassType(self):
+        return self.classType
+    
 class Coupon(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE)
     numberOfWeeks = models.IntegerField(default=4,
@@ -69,6 +72,9 @@ class Coupon(models.Model):
             MinValueValidator(1)
         ])
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    
+    def getClassType(self):
+        return self.classType
     
     def getMaxClimbers(self):
         return self.classType.getMaxClimbers()
