@@ -91,5 +91,8 @@ class Enrollment(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
     class_date = models.DateField(default=date.today)
     
+    def getClimbClass(self):
+        return self.climbClass
+    
 class Post(models.Model):
     text = models.CharField(max_length=500)

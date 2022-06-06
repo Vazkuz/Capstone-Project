@@ -105,24 +105,40 @@ def enroll_success(request):
     begin_date = request.POST.get('begin_date')
     begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
     numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
-    
+        
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
             lessonDays = ClimbClass.objects.get(pk=climbClass).getLessonDays()
+            # First check class availability (by number of students)
+            availability = 0
             for i in range(numberOfLessons):
                 for j in range(7):
                     newDay = begin_date_DF + timedelta(days=i*7+j)
-                    if newDay.strftime('%A').upper() in str(lessonDays).upper():
-                        EnrollToLesson(climbClass, coupon, newDay, climber)
-                    
-    else:
-        enroll_form = EnrollmentFormStudents()
-        return render(request, "escalada/enroll.html", {
-        "enroll_form": enroll_form,
-            "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
-        })
-    return HttpResponseRedirect(reverse("index"))
+                    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
+                        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
+                        if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
+                            newDayClass = newDay.strftime("%d/%m/%Y")
+                            availability += 1
+            if availability == 0:
+                for i in range(numberOfLessons):
+                    for j in range(7):
+                        newDay = begin_date_DF + timedelta(days=i*7+j)
+                        if newDay.strftime('%A').upper() in str(lessonDays).upper():
+                            EnrollToLesson(climbClass, coupon, newDay, climber)
+                return HttpResponseRedirect(reverse("index"))
+            
+            enroll_form = EnrollmentFormStudents()
+            return render(request, "escalada/enroll.html", {
+            "enroll_form": enroll_form,
+                "error_message": f"Error: Class is full until {newDayClass}"
+            })
+
+    enroll_form = EnrollmentFormStudents()
+    return render(request, "escalada/enroll.html", {
+    "enroll_form": enroll_form,
+        "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
+    })
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
