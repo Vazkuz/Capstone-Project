@@ -29,4 +29,4 @@ class ClimbClassAdmin(admin.ModelAdmin):
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     form = EnrollmentForm
-    list_display = ('id', 'coupon', 'begin_date', 'class_date', 'climbClass')
+    list_display = ('id', 'coupon', 'class_date', 'climbClass')

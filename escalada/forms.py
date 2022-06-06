@@ -42,25 +42,18 @@ class EnrollmentForm(forms.ModelForm):
         ##################################### VALIDATIONS #####################################
         # The begin date has to be on a weekday of class
         if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
-            raise ValidationError(f"The begin date of the class must be: {lessonDays}")
-        
-        # # The class dates have to be on a weekday of class
-        # if cleaned_data.get('class_date').strftime('%A').upper() not in str(lessonDays).upper():
-        #     raise ValidationError(f"Class dates must be: {lessonDays}")
+            raise ValidationError(f"Lesson days must be: {lessonDays}")
         
         # The begin date has to be set today or in the future, not in the past
         if cleaned_data.get('begin_date') < dt.date.today():
-            raise ValidationError(f"The begin date can't be in the past")
-        
-        # # The class dates have to be the begin date or days after that
-        # if cleaned_data.get('class_date') < cleaned_data.get('begin_date'):
-        #     raise ValidationError(f"Class dates have to be the begin date or after.")
+            raise ValidationError(f"Lessons can't be set in the past")
         
         # There can't be more climbers than the maximum set for the class type
         if cleaned_data.get('climbers'):
             if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
                 raise ValidationError(f"There can't be more than {maxNumberOfClimbers} climbers for this type of lesson.")
-            
+        
+        # Type of class of both lesson and coupon must be the same
         if cleaned_data.get('climbClass').getClassType() != cleaned_data.get('coupon').getClassType():
             raise ValidationError(f'The type of the class does not coincide with the type of the coupon selected.')
         #######################################################################################

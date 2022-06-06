@@ -105,6 +105,7 @@ def enroll_success(request):
     begin_date = request.POST.get('begin_date')
     begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
     numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
+    
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
@@ -113,7 +114,7 @@ def enroll_success(request):
                 for j in range(7):
                     newDay = begin_date_DF + timedelta(days=i*7+j)
                     if newDay.strftime('%A').upper() in str(lessonDays).upper():
-                        EnrollToLesson(climbClass, coupon, begin_date,newDay, climber)
+                        EnrollToLesson(climbClass, coupon, newDay, climber)
                     
     else:
         enroll_form = EnrollmentFormStudents()
@@ -123,16 +124,16 @@ def enroll_success(request):
         })
     return HttpResponseRedirect(reverse("index"))
 
-def EnrollToLesson(climbClass, coupon, begin_date, class_date,climber):
+def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
-    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date).count() > 0:
+    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, class_date=class_date).count() > 0:
         # If the class already exists, then the climber is added to that lesson:
-        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date)
+        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, class_date=class_date)
         enrollment.climbers.add(climber)
     else:
         # If not, then the lesson is created and the climber enrolled to it
         climbClass = ClimbClass.objects.get(pk=climbClass)
         coupon = Coupon.objects.get(pk=coupon)
-        newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, begin_date=begin_date, class_date=class_date)
+        newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, class_date=class_date)
         newEnrollment.save()
         newEnrollment.climbers.add(climber)

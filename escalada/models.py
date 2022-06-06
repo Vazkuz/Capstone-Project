@@ -89,7 +89,6 @@ class Enrollment(models.Model):
     climbers = models.ManyToManyField(User)
     climbClass = models.ForeignKey(ClimbClass, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
-    begin_date = models.DateField(default=date.today)
     class_date = models.DateField(default=date.today)
     
 class Post(models.Model):
