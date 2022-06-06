@@ -74,7 +74,7 @@ class Coupon(models.Model):
         return self.classType.getMaxClimbers()
     
     def getNumberOfClasses(self):
-        return self.numberOfWeeks * self.classType.getLessonsPerWeek()
+        return self.numberOfWeeks
     
     def __str__(self):
         return f'{self.numberOfWeeks} ({self.classType}) at {self.price} soles'
