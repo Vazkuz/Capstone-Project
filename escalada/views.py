@@ -105,7 +105,6 @@ def enroll_success(request):
     begin_date = request.POST.get('begin_date')
     begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
     numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
-    
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
@@ -117,7 +116,11 @@ def enroll_success(request):
                         EnrollToLesson(climbClass, coupon, begin_date,newDay, climber)
                     
     else:
-        return render(request, "escalada/error_in_newclass.html")
+        enroll_form = EnrollmentFormStudents()
+        return render(request, "escalada/enroll.html", {
+        "enroll_form": enroll_form,
+            "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
+        })
     return HttpResponseRedirect(reverse("index"))
 
 def EnrollToLesson(climbClass, coupon, begin_date, class_date,climber):

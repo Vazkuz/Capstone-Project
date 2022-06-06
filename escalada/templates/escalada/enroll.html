@@ -6,4 +6,9 @@
         {% csrf_token %}
         <input type = "submit" value="Enroll">
     </form>
+    {% if error_message %}
+        <ul>
+            <li>{{error_message}}</li>
+        </ul>
+    {% endif %}
 {% endblock body %}

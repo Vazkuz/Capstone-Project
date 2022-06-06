@@ -1,6 +1,4 @@
 {% extends 'escalada/layout.html' %}
 {% block body %}
-    <p>There was an error in the form sent. Perhaps the number of climbers exceed the maximum allowed for the class type or the number of lessons per week doesn't match with
-        the number of days chosen.
-    </p>
+    {{error_message}}
 {% endblock %}
