@@ -1,8 +1,9 @@
+from dataclasses import fields
 from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass, Lesson, Coupon
+from .models import ClimbClass, Lesson, Coupon, MyCoupon
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -76,4 +77,18 @@ class CouponForm(forms.ModelForm):
         
         if classType is not None and climbPassType is not None:
             raise ValidationError(f"The coupon can't be for both a class and a climb pass. Choose one of them and leave the other null.")
+        
+        if classType is None and climbPassType is None:
+            raise ValidationError(f"Both a class type and a climb pass type can't be null.")
+        
+class MyCouponForm(forms.ModelForm):
+    class Meta:
+        model = MyCoupon
+        fields = '__all__'
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        numberOfClasses = cleaned_data.get('coupon').getNumberOfClasses()
+        if not cleaned_data.get('coupon').is_Recurring() and numberOfClasses != cleaned_data.get('ticketsAvailable') and cleaned_data.get('recentlyBought'):
+            raise ValidationError(f"For this climb pass the initial number of tickets must be {numberOfClasses}")
             

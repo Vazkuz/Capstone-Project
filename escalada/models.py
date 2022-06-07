@@ -100,6 +100,12 @@ class Coupon(models.Model):
     def getNumberOfClasses(self):
         return self.numberOfWeeks
     
+    def is_Recurring(self):
+        if self.classType is None:
+            return False
+        else:
+            return True
+    
     def __str__(self):
         return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.classType})'
     
@@ -117,8 +123,9 @@ class MyCoupon(models.Model):
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
     ticketsAvailable = models.IntegerField(
         validators=[
-            MinValueValidator(1)
+            MinValueValidator(0)
         ])
+    recentlyBought = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
