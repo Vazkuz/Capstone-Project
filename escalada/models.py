@@ -103,7 +103,7 @@ class Coupon(models.Model):
     def __str__(self):
         return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.classType})'
     
-class Enrollment(models.Model):
+class Lesson(models.Model):
     climbers = models.ManyToManyField(User)
     climbClass = models.ForeignKey(ClimbClass, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import User, ClassType, ClimbClass, Coupon, Enrollment, MyCoupon, ClimbPassType
-from .forms import ClimbClassForm, EnrollmentForm, CouponForm
+from .models import User, ClassType, ClimbClass, Coupon, Lesson, MyCoupon, ClimbPassType
+from .forms import ClimbClassForm, LessonForm, CouponForm
 
 def duplicate_event(modeladmin, request, queryset):
     for object in queryset:
@@ -33,9 +33,9 @@ class ClimbClassAdmin(admin.ModelAdmin):
     form = ClimbClassForm
     list_display = ('id', 'classType', 'lessonDay')
     
-@admin.register(Enrollment)
+@admin.register(Lesson)
 class EnrollmentAdmin(admin.ModelAdmin):
-    form = EnrollmentForm
+    form = LessonForm
     list_display = ('id', 'coupon', 'class_date', 'climbClass')
     
 @admin.register(Coupon)

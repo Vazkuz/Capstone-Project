@@ -5,8 +5,8 @@ from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import ClassType, ClimbClass, Coupon, Enrollment, User
-from .forms import ClimbClassForm, EnrollmentForm, EnrollmentFormStudents
+from .models import ClassType, ClimbClass, Coupon, Lesson, User
+from .forms import ClimbClassForm, LessonForm, LessonFormStudents
 from datetime import datetime, timedelta
 
 # Create your views here.
@@ -92,14 +92,14 @@ def register(request):
 
 @login_required
 def enroll(request):
-    enroll_form = EnrollmentFormStudents()
+    enroll_form = LessonFormStudents()
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form
     })
     
 @login_required
 def enroll_success(request):
-    class_form = EnrollmentFormStudents(request.POST)
+    class_form = LessonFormStudents(request.POST)
     climbClass = request.POST.get('climbClass')
     coupon = request.POST.get('coupon')
     begin_date = request.POST.get('begin_date')
@@ -115,8 +115,8 @@ def enroll_success(request):
             for i in range(numberOfLessons):
                 for j in range(7):
                     newDay = begin_date_DF + timedelta(days=i*7+j)
-                    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
-                        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
+                    if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
+                        enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
                         if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
                             newDayClass = newDay.strftime("%d/%m/%Y")
                             availability += 1
@@ -128,13 +128,13 @@ def enroll_success(request):
                             EnrollToLesson(climbClass, coupon, newDay, climber)
                 return HttpResponseRedirect(reverse("index"))
             
-            enroll_form = EnrollmentFormStudents()
+            enroll_form = LessonFormStudents()
             return render(request, "escalada/enroll.html", {
             "enroll_form": enroll_form,
                 "error_message": f"Error: Class is full until {newDayClass}"
             })
 
-    enroll_form = EnrollmentFormStudents()
+    enroll_form = LessonFormStudents()
     return render(request, "escalada/enroll.html", {
     "enroll_form": enroll_form,
         "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
@@ -142,14 +142,14 @@ def enroll_success(request):
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
-    if Enrollment.objects.filter(climbClass=climbClass, coupon=coupon, class_date=class_date).count() > 0:
+    if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=class_date).count() > 0:
         # If the class already exists, then the climber is added to that lesson:
-        enrollment = Enrollment.objects.get(climbClass=climbClass, coupon=coupon, class_date=class_date)
+        enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=class_date)
         enrollment.climbers.add(climber)
     else:
         # If not, then the lesson is created and the climber enrolled to it
         climbClass = ClimbClass.objects.get(pk=climbClass)
         coupon = Coupon.objects.get(pk=coupon)
-        newEnrollment = Enrollment(climbClass=climbClass, coupon=coupon, class_date=class_date)
+        newEnrollment = Lesson(climbClass=climbClass, coupon=coupon, class_date=class_date)
         newEnrollment.save()
         newEnrollment.climbers.add(climber)

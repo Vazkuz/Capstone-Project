@@ -2,7 +2,7 @@ from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass, Enrollment, Coupon
+from .models import ClimbClass, Lesson, Coupon
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -26,9 +26,9 @@ class ClimbClassForm(forms.ModelForm):
         else:
             print("Lesson Day is not clean.")
             
-class EnrollmentForm(forms.ModelForm):
+class LessonForm(forms.ModelForm):
     class Meta:
-        model = Enrollment
+        model = Lesson
         fields = '__all__'
         
     def clean(self):
@@ -58,10 +58,10 @@ class EnrollmentForm(forms.ModelForm):
 class DateInput(forms.DateInput):
     input_type = 'date'
 
-class EnrollmentFormStudents(EnrollmentForm):
+class LessonFormStudents(LessonForm):
     begin_date = forms.DateField(widget=DateInput)
     class Meta:
-        model = Enrollment
+        model = Lesson
         exclude = ('climbers', 'class_date', )
         
 class CouponForm(forms.ModelForm):
