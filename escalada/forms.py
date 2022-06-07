@@ -2,7 +2,7 @@ from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass, Enrollment
+from .models import ClimbClass, Enrollment, Coupon
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -20,12 +20,9 @@ class ClimbClassForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         lessonsPerWeek = cleaned_data.get('classType').getLessonsPerWeek()
-        is_Recurring = cleaned_data.get('classType').is_Recurring()
         numberOfLessonsPerWeek = len(cleaned_data.get('lessonDay'))
-
-        if cleaned_data.get('lessonDay') or is_Recurring:
-            if numberOfLessonsPerWeek != lessonsPerWeek and is_Recurring:
-                raise ValidationError(f"The number of lessons per week must be {lessonsPerWeek}")
+        if numberOfLessonsPerWeek != lessonsPerWeek:
+            raise ValidationError(f"The number of lessons per week must be {lessonsPerWeek}")
         else:
             print("Lesson Day is not clean.")
             
@@ -55,7 +52,7 @@ class EnrollmentForm(forms.ModelForm):
         
         # Type of class of both lesson and coupon must be the same
         if cleaned_data.get('climbClass').getClassType() != cleaned_data.get('coupon').getClassType():
-            raise ValidationError(f'The type of the class does not coincide with the type of the coupon selected.')
+            raise ValidationError(f'The type of the class does not match the type of the coupon selected.')
         #######################################################################################
 
 class DateInput(forms.DateInput):
@@ -66,3 +63,17 @@ class EnrollmentFormStudents(EnrollmentForm):
     class Meta:
         model = Enrollment
         exclude = ('climbers', 'class_date', )
+        
+class CouponForm(forms.ModelForm):
+    class Meta:
+        model = Coupon
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        classType = cleaned_data.get('classType')
+        climbPassType = cleaned_data.get('climbPassType')
+        
+        if classType is not None and climbPassType is not None:
+            raise ValidationError(f"The coupon can't be for both a class and a climb pass. Choose one of them and leave the other null.")
+            

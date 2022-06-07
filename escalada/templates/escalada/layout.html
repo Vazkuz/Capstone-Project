@@ -39,6 +39,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'enroll' %}">Enroll</a>
+                    </li>
                     {% if user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'createClass' %}">Create Class</a>

@@ -37,7 +37,6 @@ class ClassType(models.Model):
     maxClimbers = models.IntegerField(default=1)
     onlyStaffEditable = models.BooleanField(default=True)
     durationInHours = models.IntegerField(default=2)
-    isRecurring = models.BooleanField(default=False)
     
     def __str__(self):
         return self.type
@@ -47,9 +46,21 @@ class ClassType(models.Model):
     
     def getLessonsPerWeek(self):
         return self.lessonsPerWeek
+
+class ClimbPassType(models.Model):
+    type = models.CharField(max_length=64)
+    maxClimbers = models.IntegerField(default=1)
+    onlyStaffEditable = models.BooleanField(default=True)
+    durationInHours = models.IntegerField(default=2)
     
-    def is_Recurring(self):
-        return self.isRecurring
+    def __str__(self):
+        return self.type
+    
+    def getMaxClimbers(self):
+        return self.maxClimbers
+    
+    def getLessonsPerWeek(self):
+        return self.lessonsPerWeek
     
 class ClimbClass(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, related_name= "class_type")
@@ -66,24 +77,31 @@ class ClimbClass(models.Model):
         return self.classType
     
 class Coupon(models.Model):
-    classType = models.ForeignKey(ClassType, on_delete=models.CASCADE)
+    classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, blank=True)
+    climbPassType = models.ForeignKey(ClimbPassType, on_delete=models.CASCADE, null=True, blank=True)
     numberOfWeeks = models.IntegerField(default=4,
         validators=[
-            MinValueValidator(1)
+            MinValueValidator(0)
         ])
     price = models.DecimalField(max_digits=6, decimal_places=2)
     
     def getClassType(self):
         return self.classType
     
+    def getclimbPassType(self):
+        return self.climbPassType
+    
     def getMaxClimbers(self):
-        return self.classType.getMaxClimbers()
+        if self.classType is not None:
+            return self.classType.getMaxClimbers()
+        else:
+            return self.climbPassType.getMaxClimbers()
     
     def getNumberOfClasses(self):
         return self.numberOfWeeks
     
     def __str__(self):
-        return f'{self.numberOfWeeks} ({self.classType}) at {self.price} soles'
+        return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.classType})'
     
 class Enrollment(models.Model):
     climbers = models.ManyToManyField(User)
@@ -94,5 +112,28 @@ class Enrollment(models.Model):
     def getClimbClass(self):
         return self.climbClass
     
+class MyCoupon(models.Model):
+    climber = models.ForeignKey(User, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
+    ticketsAvailable = models.IntegerField(
+        validators=[
+            MinValueValidator(1)
+        ])
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name="%(app_label)s_%(class)s_unique_relationships",
+                fields=["climber", "coupon"],
+            )
+        ]
+    
 class Post(models.Model):
     text = models.CharField(max_length=500)
+
+# USAR ESTO PARA GUARDAR TODOS LOS INGRESOS DEL GIMNASIO
+class Income(models.Model):
+    climber = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    concept = models.CharField(max_length=500)
+    date = models.DateTimeField(auto_now_add=True)
