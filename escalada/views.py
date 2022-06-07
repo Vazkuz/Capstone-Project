@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, Coupon, Lesson, User
-from .forms import ClimbClassForm, LessonForm, LessonFormStudents
+from .forms import ClimbClassForm, LessonForm, LessonFormStudents, BuyCouponForm, MyCouponForm
 from datetime import datetime, timedelta
 
 # Create your views here.
@@ -139,6 +139,33 @@ def enroll_success(request):
     "enroll_form": enroll_form,
         "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
     })
+    
+@login_required
+def buyCoupon(request):
+    buyForm = BuyCouponForm()
+    return render(request, "escalada/buy_coupon.html", {
+        "buyForm": buyForm
+    })
+    
+@login_required
+def buyCouponSubmit(request):
+    climber = request.user
+    ticketsAvailable = Coupon.objects.get(pk=request.POST.get('coupon')).getNumberOfClasses()
+    updated_request = request.POST.copy()
+    updated_request['climber'] = climber
+    updated_request['ticketsAvailable'] = ticketsAvailable
+    myCouponForm = MyCouponForm(updated_request)
+    if myCouponForm.is_valid():
+        myCouponForm.save()
+    else:
+        print("________________________________________________________________________")
+        print(updated_request)
+        print(myCouponForm.errors.as_data())
+        print("________________________________________________________________________")
+    
+    return HttpResponseRedirect(reverse('index'))
+    
+    
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

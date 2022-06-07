@@ -91,4 +91,9 @@ class MyCouponForm(forms.ModelForm):
         numberOfClasses = cleaned_data.get('coupon').getNumberOfClasses()
         if not cleaned_data.get('coupon').is_Recurring() and numberOfClasses != cleaned_data.get('ticketsAvailable') and cleaned_data.get('recentlyBought'):
             raise ValidationError(f"For this climb pass the initial number of tickets must be {numberOfClasses}")
+        
+class BuyCouponForm(MyCouponForm):
+    class Meta:
+        model = MyCoupon
+        exclude = ('climber', 'ticketsAvailable', 'recentlyBought', )
             
