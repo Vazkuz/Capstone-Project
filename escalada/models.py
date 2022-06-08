@@ -66,6 +66,7 @@ class ClimbClass(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, related_name= "class_type")
     lessonDay = MultiSelectField(choices = LessonDay, blank=True)
     begin_time = models.TimeField(default=time(00, 00))
+    is_Available = models.BooleanField(default=True)
     
     def __str__(self):
         return f'{self.classType} at {self.begin_time} ({self.lessonDay})'

@@ -11,9 +11,9 @@ from datetime import datetime, timedelta
 
 # Create your views here.
 def index(request):
-    # availableClasses = ClimbClass.objects.filter(isAvailable = True)
+    availableClasses = ClimbClass.objects.filter(is_Available = True)
     return render(request, "escalada/index.html", {
-        # "availableClasses": availableClasses
+        "availableClasses": availableClasses
     })
 
 @staff_member_required(login_url=reverse_lazy('index'))
