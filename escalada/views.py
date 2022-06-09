@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import ClassType, ClimbClass, Coupon, Lesson, User
+from .models import ClassType, ClimbClass, Coupon, Lesson, MyCoupon, User
 from .forms import ClimbClassForm, LessonForm, LessonFormStudents, BuyCouponForm, MyCouponForm
 from datetime import datetime, timedelta
 
@@ -92,7 +92,7 @@ def register(request):
 
 @login_required
 def enroll(request):
-    enroll_form = LessonFormStudents(user=request.user)
+    enroll_form = LessonFormStudents(climberFilter=request.user)
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form
     })
@@ -105,7 +105,6 @@ def enroll_success(request):
     begin_date = request.POST.get('begin_date')
     begin_date_DF = datetime.strptime(begin_date, '%Y-%m-%d')
     numberOfLessons = Coupon.objects.get(pk=coupon).getNumberOfClasses()
-        
     if class_form.is_valid():
         if request.method == 'POST':
             climber = request.user
@@ -120,21 +119,24 @@ def enroll_success(request):
                         if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
                             newDayClass = newDay.strftime("%d/%m/%Y")
                             availability += 1
+            # If availability is 0, that means that there is room in the lesson for another climber
             if availability == 0:
                 for i in range(numberOfLessons):
                     for j in range(7):
                         newDay = begin_date_DF + timedelta(days=i*7+j)
                         if newDay.strftime('%A').upper() in str(lessonDays).upper():
                             EnrollToLesson(climbClass, coupon, newDay, climber)
+                UseTicket(climber, coupon)
                 return HttpResponseRedirect(reverse("index"))
-            
-            enroll_form = LessonFormStudents(user=request.user)
+                
+            # If not, then the lesson is full
+            enroll_form = LessonFormStudents(climberFilter=request.user)
             return render(request, "escalada/enroll.html", {
                 "enroll_form": enroll_form,
                 "error_message": f"Error: Class is full until {newDayClass}"
             })
 
-    enroll_form = LessonFormStudents(user=request.user)
+    enroll_form = LessonFormStudents(climberFilter=request.user)
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form,
         "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
@@ -193,3 +195,10 @@ def EnrollToLesson(climbClass, coupon, class_date,climber):
         newEnrollment = Lesson(climbClass=climbClass, coupon=coupon, class_date=class_date)
         newEnrollment.save()
         newEnrollment.climbers.add(climber)
+
+
+def UseTicket(climber, coupon):
+    print("_______________________________________________________________________________")
+    print(MyCoupon.objects.get(climber = climber, coupon=coupon))
+    print("_______________________________________________________________________________")
+    
