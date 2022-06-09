@@ -149,8 +149,13 @@ def buyCoupon(request):
     
 @login_required
 def buyCouponSubmit(request):
-    climber = request.user
-    ticketsAvailable = Coupon.objects.get(pk=request.POST.get('coupon')).getNumberOfClasses()
+    climber = request.user    
+    # If the coupon is for a recurring class, then its a one time use only, otherwise the number of tickets available is given by the coupon itself
+    if Coupon.objects.get(pk=request.POST.get('coupon')).is_Recurring():
+        ticketsAvailable = 1
+    else:
+        ticketsAvailable = Coupon.objects.get(pk=request.POST.get('coupon')).getNumberOfClasses()
+    
     updated_request = request.POST.copy()
     updated_request['climber'] = climber
     updated_request['ticketsAvailable'] = ticketsAvailable

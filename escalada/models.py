@@ -109,7 +109,7 @@ class Coupon(models.Model):
     
     def __str__(self):
         if self.classType is None:
-            return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.climbPassType})'
+            return f'{self.numberOfWeeks} climb pass at {self.price} soles ({self.climbPassType})'
         return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.classType})'
     
 class Lesson(models.Model):
