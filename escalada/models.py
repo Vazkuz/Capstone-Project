@@ -138,6 +138,9 @@ class MyCoupon(models.Model):
             )
         ]
     
+    def UseTicket(self):
+        self.ticketsAvailable -= 1
+    
 class Post(models.Model):
     text = models.CharField(max_length=500)
 

@@ -198,7 +198,9 @@ def EnrollToLesson(climbClass, coupon, class_date,climber):
 
 
 def UseTicket(climber, coupon):
-    print("_______________________________________________________________________________")
-    print(MyCoupon.objects.get(climber = climber, coupon=coupon))
-    print("_______________________________________________________________________________")
+    editMyCoupon = MyCoupon.objects.get(climber = climber, coupon=coupon)
+    editMyCoupon.ticketsAvailable -= 1
+    editMyCoupon.save()
+    if editMyCoupon.ticketsAvailable <= 0:
+        editMyCoupon.delete()
     
