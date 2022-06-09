@@ -65,6 +65,11 @@ class LessonFormStudents(LessonForm):
         model = Lesson
         exclude = ('climbers', 'class_date', )
         
+    def __init__(self, user=None, **kwargs):
+        super(LessonFormStudents, self).__init__(**kwargs)
+        if user:
+            self.fields['coupon'].queryset = Coupon.objects.filter(pk__in = MyCoupon.objects.filter(climber=user).values('coupon'))
+        
 class CouponForm(forms.ModelForm):
     class Meta:
         model = Coupon

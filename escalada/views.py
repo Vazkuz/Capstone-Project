@@ -92,7 +92,7 @@ def register(request):
 
 @login_required
 def enroll(request):
-    enroll_form = LessonFormStudents()
+    enroll_form = LessonFormStudents(user=request.user)
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form
     })
@@ -128,13 +128,13 @@ def enroll_success(request):
                             EnrollToLesson(climbClass, coupon, newDay, climber)
                 return HttpResponseRedirect(reverse("index"))
             
-            enroll_form = LessonFormStudents()
+            enroll_form = LessonFormStudents(user=request.user)
             return render(request, "escalada/enroll.html", {
                 "enroll_form": enroll_form,
                 "error_message": f"Error: Class is full until {newDayClass}"
             })
 
-    enroll_form = LessonFormStudents()
+    enroll_form = LessonFormStudents(user=request.user)
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form,
         "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
