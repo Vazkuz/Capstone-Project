@@ -130,13 +130,13 @@ def enroll_success(request):
             
             enroll_form = LessonFormStudents()
             return render(request, "escalada/enroll.html", {
-            "enroll_form": enroll_form,
+                "enroll_form": enroll_form,
                 "error_message": f"Error: Class is full until {newDayClass}"
             })
 
     enroll_form = LessonFormStudents()
     return render(request, "escalada/enroll.html", {
-    "enroll_form": enroll_form,
+        "enroll_form": enroll_form,
         "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
     })
     
@@ -158,10 +158,18 @@ def buyCouponSubmit(request):
     if myCouponForm.is_valid():
         myCouponForm.save()
     else:
-        print("________________________________________________________________________")
-        print(updated_request)
-        print(myCouponForm.errors.as_data())
-        print("________________________________________________________________________")
+        buyForm = BuyCouponForm()
+        if list(myCouponForm.errors.as_data()['__all__'][0])[0] == 'My coupon with this Climber and Coupon already exists.':
+            return render(request, "escalada/buy_coupon.html", {
+                "buyForm": buyForm,
+                "error_message": "You already have that Coupon"
+            })
+        else:                    
+            return render(request, "escalada/buy_coupon.html", {
+                "buyForm": buyForm,
+                "error_message": "Error: " + list(myCouponForm.errors.as_data()['__all__'][0])[0]
+            })
+                    
     
     return HttpResponseRedirect(reverse('index'))
     

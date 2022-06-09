@@ -5,4 +5,9 @@
         {% csrf_token %}
         <input type = "submit" value="Buy">
     </form>
+    {% if error_message %}
+        <ul>
+            <li>{{error_message}}</li>
+        </ul>
+    {% endif %}
 {% endblock %}
