@@ -179,8 +179,10 @@ def buyCouponSubmit(request):
                     
     
     return HttpResponseRedirect(reverse('index'))
-    
-    
+
+@login_required
+def my_calendar(request):
+    return render(request, "escalada/calendar.html")
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

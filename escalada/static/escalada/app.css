@@ -3,6 +3,10 @@ body{
     margin-left: 250px;
 }
 
+#calendar{
+    padding: 10px;
+}
+
 #escalada-brand{
     font-size: 38px;
 }

@@ -23,6 +23,7 @@
         <script src="{% static 'escalada/layout.js' %}"></script>
 
         <link rel="stylesheet" href="{% static 'escalada/app.css' %}">
+        <link href="{% static 'fullcalendar/lib/main.css' %}" rel='stylesheet'>
         {% block script %}
         {% endblock %}
     </head>
@@ -45,7 +46,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="{% url 'my_calendar' %}">
                         <i class="fa-regular fa-calendar-check icon"></i>
                         <span>Calendar</span>
                     </a>
