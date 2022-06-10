@@ -1,0 +1,134 @@
+body{
+    margin: 0;
+    margin-left: 250px;
+}
+
+#escalada-brand{
+    font-size: 38px;
+}
+
+#navBar{
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    background-color: #28727d;
+    color: #ece2d6;
+    top: 0;
+    left: 0;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.nav-brand{
+    text-align: center;
+}
+
+.nav-items{
+    padding-inline-start: 0;
+}
+
+.nav-items li{
+    list-style-type: none;
+}
+
+.nav-items li{
+    list-style-type: none;
+    margin-bottom: 10px;
+    font-size: 18px;
+    height: 45px;
+    width: 100%;
+}
+
+.nav-items li a{
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    display: flex;
+    text-align: left;
+    align-items: center;
+    color: #ece2d6;
+    transition: var(--tran-02);
+}
+
+.nav-items li a:hover{
+    text-decoration: none;
+    background-color: var(--hover-color);
+}
+
+.nav-items li .link-footer:hover{
+    text-decoration: none;
+    background-color: var(--login-out-color);
+}
+
+.nav-items li a:active, .nav-items li a:link, .nav-items li a:visited {
+    text-decoration: none;
+}
+
+.nav-items li a .icon{
+    min-width: 60px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-items > li:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.footer{
+    text-align: center;
+}
+
+#hamburgerBtn{
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    display: none;
+    z-index: 10;
+}
+
+#hamburgerBtn:hover{
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 768px){
+    body{
+        margin-left: 0;
+    }
+
+    #navBar{
+        width: 100vw;
+        transform: translateX(-1000px);
+        transition: transform 500ms;
+    }
+
+    #navBar.open{
+        transform: translateX(0);
+    }
+
+    .nav-items > li{
+        text-align: center;
+    }
+
+    #hamburgerBtn{
+        display: inline-block;
+    }
+}
+
+
+:root{
+    /*======== Colors ========*/
+    --hover-color: #33287d;
+    --login-out-color: #7d2848;
+
+
+    /*======== Transition ========*/
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}

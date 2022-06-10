@@ -20,38 +20,116 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
         <script src="jquery-3.6.0.min.js"></script>
+        <script src="{% static 'escalada/layout.js' %}"></script>
+
+        <link rel="stylesheet" href="{% static 'escalada/app.css' %}">
         {% block script %}
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            {% comment %} <a class="navbar-brand" href="#">Network</a> {% endcomment %}
-          
+        <div class="body">
+            {% block body %}
+            {% endblock %}
+        </div>
+        <span id="hamburgerBtn">&#9776</span>
+        <nav id="navBar">
+            <div class="nav-brand">
+                <p id="escalada-brand">Escalada</p>
+                <p><em>Your climbing site!</em></p>
+            </div>
+            <ul class="nav-items">
+                <li>
+                    <a href="{% url 'index' %}">
+                        <i class="fa-solid fa-house icon"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-regular fa-calendar-check icon"></i>
+                        <span>Calendar</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-person-chalkboard icon"></i>
+                        <span>My Classes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-ticket icon"></i>
+                        <span>My Coupons</span>
+                    </a>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'buyCoupon' %}">
+                    {% else %}
+                    <a href="{% url 'login' %}">
+                    {% endif %}
+                        <i class="fa-regular fa-credit-card icon"></i>
+                        <span>Buy a coupon</span>
+                    </a>
+                </li>
+                <li>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'enroll' %}">
+                    {% else %}
+                    <a href="{% url 'login' %}">
+                    {% endif %}
+                        <i class="fa-solid fa-pen icon"></i>
+                        <span>Enroll</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa-regular fa-bookmark icon"></i>
+                        <span>Book a climb</span>
+                    </a>
+                </li>
+                {% if user.is_superuser %}
+                <li>
+                    <a href="{% url 'createClass' %}">
+                        <i class="fa-solid fa-circle-plus icon"></i>
+                        <span>Create a class</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="footer">
+                <ul class="nav-items">
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a class="link-footer" href="{% url 'logout' %}">
+                                <i class="fa-solid fa-right-from-bracket icon"></i>
+                                <span>Log out</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a class="link-footer" href="{% url 'login' %}">
+                                <i class="fa-solid fa-right-to-bracket icon"></i>
+                                <span>Login</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="link-footer" href="{% url 'register' %}">
+                                <i class="fa-solid fa-user-plus icon"></i>
+                                <span>Register</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+        {% comment %} <nav class="navbar navbar-expand-lg navbar-light bg-light">          
             <div>
               <ul class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
-                    {% comment %} <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile_page' user.id %}"><strong>{{ user.username }}</strong></a>
-                    </li> {% endcomment %}
-                {% endif %}
-                {% comment %} <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li> {% endcomment %}
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'buyCoupon' %}">Buy a Coupon</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'enroll' %}">Enroll</a>
-                    </li>
-                    {% if user.is_superuser %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'createClass' %}">Create Class</a>
-                        </li>
-                    {% endif %}
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
@@ -62,11 +140,6 @@
                 {% endif %}
               </ul>
             </div>
-          </nav>
-
-        <div class="body">
-            {% block body %}
-            {% endblock %}
-        </div>
+          </nav> {% endcomment %}
     </body>
 </html>
