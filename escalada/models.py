@@ -113,7 +113,7 @@ class Coupon(models.Model):
         return f'{self.numberOfWeeks} weeks at {self.price} soles ({self.classType})'
     
 class Lesson(models.Model):
-    climbers = models.ManyToManyField(User)
+    climbers = models.ManyToManyField(User, related_name="students")
     climbClass = models.ForeignKey(ClimbClass, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
     class_date = models.DateField(default=date.today)
