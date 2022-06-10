@@ -15,7 +15,7 @@ for i in range(len(HOUR_CHOICES)):
 class ClimbClassForm(forms.ModelForm):
     class Meta:
         model = ClimbClass
-        fields = '__all__'
+        exclude = ('end_time',)
         widgets = {'begin_time': forms.Select(choices=HOUR_CHOICES3)}
 
     def clean(self):

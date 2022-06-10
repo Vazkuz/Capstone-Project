@@ -27,7 +27,7 @@ admin.site.register(ClimbPassType, ClimbPassTypeAdmin)
 @admin.register(ClimbClass)
 class ClimbClassAdmin(admin.ModelAdmin):
     form = ClimbClassForm
-    list_display = ('id', 'classType', 'lessonDay', 'begin_time','is_Available')
+    list_display = ('id', 'classType', 'lessonDay', 'begin_time', 'end_time', 'is_Available')
     
 @admin.register(Lesson)
 class EnrollmentAdmin(admin.ModelAdmin):

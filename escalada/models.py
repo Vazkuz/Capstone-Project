@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
 from multiselectfield import MultiSelectField
 
 MONDAY = 0
@@ -66,10 +66,15 @@ class ClimbClass(models.Model):
     classType = models.ForeignKey(ClassType, on_delete=models.CASCADE, null=True, related_name= "class_type")
     lessonDay = MultiSelectField(choices = LessonDay, blank=True)
     begin_time = models.TimeField(default=time(00, 00))
+    end_time = models.TimeField()
     is_Available = models.BooleanField(default=True)
     
     def __str__(self):
         return f'{self.classType} at {self.begin_time} ({self.lessonDay})'
+    
+    def save(self, *args, **kwargs):
+        self.end_time = (datetime.combine(date(1,1,1),self.begin_time) + timedelta(hours=self.classType.durationInHours)).time()
+        super().save(*args, **kwargs)
     
     def getLessonDays(self):
         return self.lessonDay

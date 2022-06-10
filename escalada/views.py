@@ -182,7 +182,10 @@ def buyCouponSubmit(request):
 
 @login_required
 def my_calendar(request):
-    return render(request, "escalada/calendar.html")
+    myLessons = Lesson.objects.filter(climbers__in=[request.user])
+    return render(request, "escalada/calendar.html",{
+        "myLessons": myLessons
+    })
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
