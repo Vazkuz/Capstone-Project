@@ -54,3 +54,4 @@ Class that relates Coupons with Users. They are unique (no user can have the sam
 
 ## Requirements:
 - django-multiselectfield (https://pypi.org/project/django-multiselectfield/). Install using this command: pip install django-multiselectfield
+- FullCalendar (https://fullcalendar.io/docs/initialize-globals). Install downloading zip from webpage or, using NPM: npm install fullcalendar.
