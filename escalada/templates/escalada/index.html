@@ -15,7 +15,7 @@
                     {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> {% endcomment %}
                     {% if user.is_authenticated %}
                         <a href="#" class="enroll-link" data-climbclass={{availableClass.id}}>Enroll!</a>
-                        <a href="{% url 'buyCoupon' %}" class="buy-coupon-link">Buy a coupon</a>
+                        <a href="#" class="buy-coupon-link" data-climbclass={{availableClass.classType}}>Buy a coupon</a>
                     {% endif %}
                     </div>
                 </div>
@@ -24,11 +24,11 @@
             {% endfor %}
             </div>
         </div>
-        <div id="enroll-buy-form">
+        <div id="buy-form">
         </div>
     </body>
 {% endblock body %}
 
 {% block script %}
-    <script src="{% static 'escalada/inbox.js' %}"></script>
+    <script src="{% static 'escalada/index.js' %}"></script>
 {% endblock %}
