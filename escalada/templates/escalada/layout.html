@@ -69,7 +69,7 @@
                     <a href="{% url 'login' %}">
                     {% endif %}
                         <i class="fa-regular fa-credit-card icon"></i>
-                        <span>Buy a coupon</span>
+                        <span>Buy a Coupon</span>
                     </a>
                 </li>
                 <li>
@@ -85,14 +85,14 @@
                 <li>
                     <a href="#">
                         <i class="fa-regular fa-bookmark icon"></i>
-                        <span>Book a climb</span>
+                        <span>Book a Climb</span>
                     </a>
                 </li>
                 {% if user.is_superuser %}
                 <li>
                     <a href="{% url 'createClass' %}">
                         <i class="fa-solid fa-circle-plus icon"></i>
-                        <span>Create a class</span>
+                        <span>Create a Class</span>
                     </a>
                 </li>
                 {% endif %}
