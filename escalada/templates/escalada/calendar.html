@@ -15,6 +15,7 @@
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
+            selectable: true,
             events: [
                 {% for lesson in myLessons %}
                     {
@@ -23,7 +24,12 @@
                         end: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.end_time | date:'G:i:s'}}",
                     },
                 {% endfor %}
-            ]
+            ],
+            dateClick: function(info) {
+                calendar.gotoDate(info.date);
+                calendar.changeView('timeGridDay');
+            }
+            
         });
         calendar.render();
     });
@@ -31,9 +37,6 @@
     </script>
 {% endblock script %}
 {% block body %}
-    <div>
-        <h2><strong>My Calendar</strong></h2>
-    </div>
     <div id='calendar' class="container">
 
     </div>
