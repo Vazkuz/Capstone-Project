@@ -1,5 +1,6 @@
 {% extends 'escalada/layout.html' %}
 {% load static %}
+{% load tz %}
 
 {% block script %}
     <meta charset='utf-8' />
@@ -22,6 +23,13 @@
                         title: "Clase de escalada",
                         start: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.begin_time | date:'G:i:s'}}",
                         end: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.end_time | date:'G:i:s'}}",
+                    },
+                {% endfor %}
+                {% for climb in myClimbs %}
+                    {
+                        title: "Escalada libre",
+                        start: "{{ climb.date | date:'Y-m-d'}}T{{climb.begin_time | date:'G:i:s'}}",
+                        end: "{{ climb.date | date:'Y-m-d'}}T{{climb.end_time | date:'G:i:s'}}",
                     },
                 {% endfor %}
             ],

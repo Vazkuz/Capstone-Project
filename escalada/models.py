@@ -126,6 +126,25 @@ class Lesson(models.Model):
     def getClimbClass(self):
         return self.climbClass
     
+class FreeClimb(models.Model):
+    climber = models.ForeignKey(User, related_name="freeClimber", on_delete=models.CASCADE)
+    climbPassType = models.ForeignKey(ClimbPassType, on_delete=models.CASCADE)
+    coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)
+    date = models.DateField(default=date.today)
+    begin_time = models.TimeField(default=time(00, 00))
+    end_time = models.TimeField(default=time(2, 00))
+    
+    def save(self, *args, **kwargs):
+        self.end_time = (datetime.combine(date(1,1,1),self.begin_time) + timedelta(hours=self.climbPassType.durationInHours)).time()
+        super().save(*args, **kwargs)
+    
+    def getclimbPassType(self):
+        return self.climbPassType
+    
+    def __str__(self):
+        return f'{self.climbPassType} climb for {self.climber} {self.date} from {self.begin_time} to {self.end_time}'
+    
+    
 class MyCoupon(models.Model):
     climber = models.ForeignKey(User, on_delete=models.CASCADE)
     coupon = models.ForeignKey(Coupon, on_delete=models.CASCADE)

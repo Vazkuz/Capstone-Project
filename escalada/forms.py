@@ -3,7 +3,7 @@ from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass, Lesson, Coupon, MyCoupon
+from .models import ClimbClass, Lesson, Coupon, MyCoupon, FreeClimb
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -102,4 +102,19 @@ class BuyCouponForm(MyCouponForm):
     class Meta:
         model = MyCoupon
         exclude = ('climber', 'ticketsAvailable', 'recentlyBought', )
-            
+
+class FreeClimbForm(forms.ModelForm):
+    class Meta:
+        model = FreeClimb
+        exclude = ('end_time',)
+        widgets = {'begin_time': forms.Select(choices=HOUR_CHOICES3)}
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        ##################################### VALIDATIONS #####################################
+        # The begin date has to be set today or in the future, not in the past
+        if cleaned_data.get('date') < dt.date.today():
+            raise ValidationError(f"You can't book a climb in the past.")
+        #######################################################################################
+          

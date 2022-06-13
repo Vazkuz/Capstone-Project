@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import ClassType, ClimbClass, Coupon, Lesson, MyCoupon, User
+from .models import ClassType, ClimbClass, Coupon, FreeClimb, Lesson, MyCoupon, User
 from .forms import ClimbClassForm, LessonForm, LessonFormStudents, BuyCouponForm, MyCouponForm
 from datetime import datetime, timedelta
 
@@ -183,9 +183,15 @@ def buyCouponSubmit(request):
 @login_required
 def my_calendar(request):
     myLessons = Lesson.objects.filter(climbers__in=[request.user])
+    myClimbs = FreeClimb.objects.filter(climber = request.user)
     return render(request, "escalada/calendar.html",{
-        "myLessons": myLessons
+        "myLessons": myLessons,
+        "myClimbs": myClimbs
     })
+
+@login_required
+def bookAClimb(request):
+    return render(request, "escalada/bookAClimb.html")
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

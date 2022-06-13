@@ -14,5 +14,6 @@ urlpatterns = [
     path("enroll_success", views.enroll_success, name="enroll_success"),
     path("buyCoupon", views.buyCoupon, name="buyCoupon"),
     path("buyCouponSubmit", views.buyCouponSubmit, name="buyCouponSubmit"),
-    path("my_calendar", views.my_calendar, name="my_calendar")
+    path("my_calendar", views.my_calendar, name="my_calendar"),
+    path("bookAClimb", views.bookAClimb, name="bookAClimb"),
 ]
