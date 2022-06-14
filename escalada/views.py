@@ -5,8 +5,8 @@ from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import ClassType, ClimbClass, Coupon, FreeClimb, Lesson, MyCoupon, User
-from .forms import ClimbClassForm, LessonForm, LessonFormStudents, BuyCouponForm, MyCouponForm
+from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Lesson, MyCoupon, User
+from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber
 from datetime import datetime, timedelta
 
 # Create your views here.
@@ -191,7 +191,34 @@ def my_calendar(request):
 
 @login_required
 def bookAClimb(request):
-    return render(request, "escalada/bookAClimb.html")
+    bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
+    return render(request, "escalada/bookAClimb.html", {
+        "bookClimbForm": bookClimbForm
+    })
+    
+@login_required
+def bookingSubmitted(request):
+    booking_form = FreeClimbFormClimber(request.POST)
+    climbPassType = ClimbPassType(pk=request.POST.get('climbPassType'))
+    coupon = Coupon(pk=request.POST.get('coupon'))
+    date = request.POST.get('date')
+    begin_time = request.POST.get('begin_time')
+    begin_time = datetime.strptime(begin_time, '%H:%M:%S').time()
+    if booking_form.is_valid():
+        if request.method == 'POST':
+            climber = request.user
+            if FreeClimb.objects.filter(climber=climber, climbPassType=climbPassType, date=date, begin_time= begin_time):
+                bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
+                return render(request, "escalada/bookAClimb.html", {
+                "bookClimbForm": bookClimbForm,
+                "error_message": f"Error: You have already booked for this hour."
+                })
+            else:
+                newClimbBooked = FreeClimb(climber=climber, coupon = coupon,climbPassType=climbPassType, date=date, begin_time= begin_time)
+                newClimbBooked.save()
+                UseTicket(climber, coupon)
+                return HttpResponseRedirect(reverse("index"))
+            
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

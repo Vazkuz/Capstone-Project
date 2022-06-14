@@ -68,6 +68,7 @@ class LessonFormStudents(LessonForm):
     def __init__(self, *args,**kwargs):
         climberFilter = kwargs.pop('climberFilter', None)
         super(LessonFormStudents, self).__init__(*args, **kwargs)
+        # Filter only the coupons the climber has
         if climberFilter:
             self.fields['coupon'].queryset = Coupon.objects.filter(pk__in = MyCoupon.objects.filter(climber=climberFilter).values('coupon'))
         
@@ -117,4 +118,18 @@ class FreeClimbForm(forms.ModelForm):
         if cleaned_data.get('date') < dt.date.today():
             raise ValidationError(f"You can't book a climb in the past.")
         #######################################################################################
-          
+
+class FreeClimbFormClimber(FreeClimbForm):
+    date = forms.DateField(widget=DateInput)
+    class Meta:
+        model = FreeClimb
+        exclude = ('climber', 'end_time')
+        widgets = {'begin_time': forms.Select(choices=HOUR_CHOICES3)}
+        
+    def __init__(self, *args,**kwargs):
+        climberFilter = kwargs.pop('climberFilter', None)
+        super(FreeClimbFormClimber, self).__init__(*args, **kwargs)
+        # Filter only the coupons the climber has
+        if climberFilter:
+            self.fields['coupon'].queryset = Coupon.objects.filter(pk__in = MyCoupon.objects.filter(climber=climberFilter).values('coupon'))
+        

@@ -3,10 +3,10 @@
     {% if user.is_authenticated %}
         <div id="bookAClimb">
             <h3>Book a Climb</h3>
-            <form action="{% url 'enroll_success' %}" method='post'>
-                {{enroll_form}}
+            <form action="{% url 'bookingSubmitted' %}" method='post'>
+                {{bookClimbForm}}
                 {% csrf_token %}
-                <input type = "submit" value="Enroll">
+                <input type = "submit" value="Book">
             </form>
             {% if error_message %}
                 <ul>
