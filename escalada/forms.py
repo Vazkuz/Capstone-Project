@@ -3,7 +3,7 @@ from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
-from .models import ClimbClass, Lesson, Coupon, MyCoupon, FreeClimb
+from .models import ClimbClass, Lesson, Coupon, MyCoupon, FreeClimb, WeekdaySchedule
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
 HOUR_CHOICES2 = [(dt.time(hour=x, minute=30), '{:02d}:30'.format(x)) for x in range(0, 24)]
@@ -132,4 +132,8 @@ class FreeClimbFormClimber(FreeClimbForm):
         # Filter only the coupons the climber has
         if climberFilter:
             self.fields['coupon'].queryset = Coupon.objects.filter(pk__in = MyCoupon.objects.filter(climber=climberFilter).values('coupon'))
-        
+
+class WeekdayScheduleForm(forms.ModelForm):
+    class Meta:
+        model = WeekdaySchedule
+        fields = '__all__'

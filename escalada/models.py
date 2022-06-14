@@ -24,6 +24,12 @@ LessonDay = (
     (SUNDAY, 'Sunday'),
 )
 
+class DayOfTheWeekField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['choices']=LessonDay
+        kwargs['max_length']=1 
+        super(DayOfTheWeekField,self).__init__(*args, **kwargs)
+
 class User(AbstractUser):
     isInstructor = models.BooleanField(default=False)
 
@@ -164,6 +170,11 @@ class MyCoupon(models.Model):
     
     def UseTicket(self):
         self.ticketsAvailable -= 1
+        
+class WeekdaySchedule(models.Model):
+    weekday = models.IntegerField(choices=LessonDay,default=0)
+    opening_hour = models.TimeField(default=time(00, 00))
+    closing_hour = models.TimeField(default=time(23, 59))
     
 class Post(models.Model):
     text = models.CharField(max_length=500)

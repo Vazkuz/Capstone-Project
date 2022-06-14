@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import User, ClassType, ClimbClass, Coupon, Lesson, MyCoupon, ClimbPassType, FreeClimb
-from .forms import ClimbClassForm, LessonForm, CouponForm, MyCouponForm, FreeClimbForm
+from .models import User, ClassType, ClimbClass, Coupon, Lesson, MyCoupon, ClimbPassType, FreeClimb, WeekdaySchedule
+from .forms import ClimbClassForm, LessonForm, CouponForm, MyCouponForm, FreeClimbForm, WeekdayScheduleForm
 
 def duplicate_event(modeladmin, request, queryset):
     for object in queryset:
@@ -22,7 +22,6 @@ class ClimbPassTypeAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(ClassType, ClassTypeAdmin)
 admin.site.register(ClimbPassType, ClimbPassTypeAdmin)
-            
 
 @admin.register(ClimbClass)
 class ClimbClassAdmin(admin.ModelAdmin):
@@ -48,3 +47,9 @@ class MyCouponAdmin(admin.ModelAdmin):
 class FreeClimbAdmin(admin.ModelAdmin):
     form = FreeClimbForm
     list_display = ('id', 'climber', 'climbPassType', 'coupon', 'date', 'begin_time', 'end_time')
+    
+@admin.register(WeekdaySchedule)
+class WeekdayScheduleAdmin(admin.ModelAdmin):
+    form = WeekdayScheduleForm
+    list_display = ('id', 'weekday', 'opening_hour', 'closing_hour')
+
