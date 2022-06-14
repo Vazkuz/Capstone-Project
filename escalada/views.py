@@ -8,6 +8,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Lesson, MyCoupon, User
 from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber
 from datetime import datetime, date, time, timedelta
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your views here.
 def index(request):
@@ -109,6 +110,17 @@ def enroll_success(request):
         if request.method == 'POST':
             climber = request.user
             lessonDays = ClimbClass.objects.get(pk=climbClass).getLessonDays()
+            # Check if the climber has the coupon
+            try:
+                MyCoupon.objects.get(climber = climber, coupon=coupon)
+            except ObjectDoesNotExist:
+                # If not, tell them
+                enroll_form = LessonFormStudents(climberFilter=request.user)
+                return render(request, "escalada/enroll.html", {
+                    "enroll_form": enroll_form,
+                    "error_message": f"Error: You don't have a coupon for that class"
+                })
+                
             # First check class availability (by number of students)
             availability = 0
             for i in range(numberOfLessons):
@@ -128,7 +140,6 @@ def enroll_success(request):
                             EnrollToLesson(climbClass, coupon, newDay, climber)
                 UseTicket(climber, coupon)
                 return HttpResponseRedirect(reverse("index"))
-                
             # If not, then the lesson is full
             enroll_form = LessonFormStudents(climberFilter=request.user)
             return render(request, "escalada/enroll.html", {
@@ -254,7 +265,18 @@ def bookingSubmitted(request):
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
                 })
-            else:
+            else:                
+                # Check if the climber has the coupon
+                try:
+                    MyCoupon.objects.get(climber = climber, coupon=coupon)
+                except ObjectDoesNotExist:
+                    # If not, tell them
+                    bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
+                    return render(request, "escalada/bookAClimb.html", {
+                        "bookClimbForm": bookClimbForm,
+                        "error_message": f"Error: You don't have a coupon for that climb"
+                    })
+                    
                 newClimbBooked = FreeClimb(climber=climber, coupon = coupon,climbPassType=climbPassType, date=date_ofClimb, begin_time= begin_time)
                 newClimbBooked.save()
                 UseTicket(climber, coupon)
