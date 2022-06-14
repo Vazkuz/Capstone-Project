@@ -123,14 +123,24 @@ def enroll_success(request):
                 
             # First check class availability (by number of students)
             availability = 0
+            isClimberOnClass = 0
             for i in range(numberOfLessons):
                 for j in range(7):
                     newDay = begin_date_DF + timedelta(days=i*7+j)
                     if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
                         enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
+                        if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [request.user]).count() > 0:
+                            isClimberOnClass += 1
                         if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
                             newDayClass = newDay.strftime("%d/%m/%Y")
                             availability += 1
+            # If isClimberOnClass > 0, that means the climber is already on that class for at least one of the days they are trying to enroll
+            if isClimberOnClass > 0:
+                enroll_form = LessonFormStudents(climberFilter=request.user)
+                return render(request, "escalada/enroll.html", {
+                    "enroll_form": enroll_form,
+                    "error_message": f"Error: You are already on that class"
+                })
             # If availability is 0, that means that there is room in the lesson for another climber
             if availability == 0:
                 for i in range(numberOfLessons):
