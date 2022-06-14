@@ -124,16 +124,43 @@ def enroll_success(request):
             # First check class availability (by number of students)
             availability = 0
             isClimberOnClass = 0
+            climbClass_CLASS = ClimbClass.objects.filter(pk=climbClass)
+            begin_time = climbClass_CLASS.values('begin_time')[0]['begin_time']
+            durationInHours = ClassType.objects.filter(pk__in=climbClass_CLASS.values('classType')).values('durationInHours')[0]['durationInHours']
+            begin_time_plus = (datetime.combine(date(1,1,1),begin_time) + timedelta(hours=durationInHours)).time()
+            begin_time_minus = (datetime.combine(date(1,1,1),begin_time) - timedelta(hours=durationInHours)).time()            
+
             for i in range(numberOfLessons):
                 for j in range(7):
                     newDay = begin_date_DF + timedelta(days=i*7+j)
-                    if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
-                        enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
-                        if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [request.user]).count() > 0:
-                            isClimberOnClass += 1
-                        if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
-                            newDayClass = newDay.strftime("%d/%m/%Y")
-                            availability += 1
+                    if newDay.strftime('%A').upper() in str(lessonDays).upper():
+                        todays_climbs = FreeClimb.objects.filter(climber=climber, date=newDay)
+                        if todays_climbs.count() > 0:
+                            if todays_climbs.filter(begin_time = begin_time):
+                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                return render(request, "escalada/enroll.html", {
+                                    "enroll_form": enroll_form,
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                })
+                            elif todays_climbs.filter(begin_time__gt = begin_time) and todays_climbs.filter(begin_time__lt = begin_time_plus):
+                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                return render(request, "escalada/enroll.html", {
+                                    "enroll_form": enroll_form,
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                })
+                            elif todays_climbs.filter(begin_time__lt = begin_time) and todays_climbs.filter(begin_time__gt = begin_time_minus):
+                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                return render(request, "escalada/enroll.html", {
+                                    "enroll_form": enroll_form,
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                })
+                        if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
+                            enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
+                            if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [request.user]).count() > 0:
+                                isClimberOnClass += 1
+                            if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
+                                newDayClass = newDay.strftime("%d/%m/%Y")
+                                availability += 1
             # If isClimberOnClass > 0, that means the climber is already on that class for at least one of the days they are trying to enroll
             if isClimberOnClass > 0:
                 enroll_form = LessonFormStudents(climberFilter=request.user)
