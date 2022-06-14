@@ -221,10 +221,6 @@ def bookingSubmitted(request):
             todays_climbs = FreeClimb.objects.filter(climber=climber, climbPassType=climbPassType, date=date_ofClimb)
             todays_lessons = Lesson.objects.filter(climbers__in = [climber], class_date = date_ofClimb)
             todays_lessons_bt = ClimbClass.objects.filter(pk__in=todays_lessons.values('climbClass')).values('begin_time')
-            print("________________________________________________________________________")
-            print(todays_lessons_bt)
-            print(type(todays_lessons_bt))
-            print("________________________________________________________________________")
             begin_time_plus = (datetime.combine(date(1,1,1),begin_time) + timedelta(hours=climbPassType.durationInHours)).time()
             begin_time_minus = (datetime.combine(date(1,1,1),begin_time) - timedelta(hours=climbPassType.durationInHours)).time()
             if todays_climbs.filter(begin_time = begin_time):
