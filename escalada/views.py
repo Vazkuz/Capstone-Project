@@ -314,6 +314,11 @@ def bookingSubmitted(request):
                 newClimbBooked.save()
                 UseTicket(climber, coupon)
                 return HttpResponseRedirect(reverse("index"))
+    bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
+    return render(request, "escalada/bookAClimb.html", {
+        "bookClimbForm": bookClimbForm,
+        "error_message": "Error: " + list(booking_form.errors.as_data()['__all__'][0])[0]
+    })
             
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):

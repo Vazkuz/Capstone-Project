@@ -3,6 +3,7 @@ from pyexpat import model
 from django import forms
 from django.core.exceptions import ValidationError
 import datetime as dt
+from datetime import datetime, date, time, timedelta
 from .models import ClimbClass, Lesson, Coupon, MyCoupon, FreeClimb, WeekdaySchedule
 
 HOUR_CHOICES = [(dt.time(hour=x), '{:02d}:00'.format(x)) for x in range(0, 24)]
@@ -112,11 +113,24 @@ class FreeClimbForm(forms.ModelForm):
     
     def clean(self):
         cleaned_data = super().clean()
-        
+        end_time_of_climb = (datetime.combine(date(1,1,1), cleaned_data.get('begin_time')) + timedelta(hours=cleaned_data.get('climbPassType').durationInHours)).time()
+        weekday = cleaned_data.get('date').weekday()
+        scheduleOfTheDay = WeekdaySchedule.objects.filter(weekday = weekday)
+
         ##################################### VALIDATIONS #####################################
         # The begin date has to be set today or in the future, not in the past
         if cleaned_data.get('date') < dt.date.today():
             raise ValidationError(f"You can't book a climb in the past.")
+        
+        # A Free climb can't be set on the closing hour of the gym or after that
+        if scheduleOfTheDay.filter(closing_hour__lte = cleaned_data.get('begin_time')).count() == scheduleOfTheDay.filter(opening_hour__lte = cleaned_data.get('begin_time')).count():
+            raise ValidationError(f"Can't set a climb after gym's closure")
+        # A Free climb can't finish after the gym closes
+        elif scheduleOfTheDay.filter(closing_hour__lte = end_time_of_climb).count() == scheduleOfTheDay.filter(opening_hour__lte = end_time_of_climb).count():
+            raise ValidationError(f'This climb would at {end_time_of_climb}, after the gym had closed.')
+        # else:
+            
+        # if scheduleOfTheDay.filter(closing_hour__lt = end_time_of_climb) or (scheduleOfTheDay.filter(closing_hour__gt = end_time_of_climb) and end_time_of_climb < cleaned_data.get('begin_time')):
         #######################################################################################
 
 class FreeClimbFormClimber(FreeClimbForm):
