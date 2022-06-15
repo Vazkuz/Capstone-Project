@@ -66,6 +66,10 @@ body{
     background-color: var(--login-out-color);
 }
 
+.fc-daygrid-day:hover{
+    cursor: pointer;
+}
+
 .nav-items li a:active, .nav-items li a:link, .nav-items li a:visited {
     text-decoration: none;
 }
