@@ -45,6 +45,7 @@
                         <span>Home</span>
                     </a>
                 </li>
+                {% if user.is_authenticated %}
                 <li>
                     <a href="{% url 'my_calendar' %}">
                         <i class="fa-regular fa-calendar-check icon"></i>
@@ -64,21 +65,13 @@
                     </a>
                 </li>
                 <li>
-                    {% if user.is_authenticated %}
                     <a href="{% url 'buyCoupon' %}">
-                    {% else %}
-                    <a href="{% url 'login' %}">
-                    {% endif %}
                         <i class="fa-regular fa-credit-card icon"></i>
                         <span>Buy a Coupon</span>
                     </a>
                 </li>
                 <li>
-                    {% if user.is_authenticated %}
                     <a href="{% url 'enroll' %}">
-                    {% else %}
-                    <a href="{% url 'login' %}">
-                    {% endif %}
                         <i class="fa-solid fa-pen icon"></i>
                         <span>Enroll</span>
                     </a>
@@ -89,6 +82,20 @@
                         <span>Book a Climb</span>
                     </a>
                 </li>
+                {% else %}
+                <li>
+                    <a class="link-footer" href="{% url 'login' %}">
+                        <i class="fa-solid fa-right-to-bracket icon"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="link-footer" href="{% url 'register' %}">
+                        <i class="fa-solid fa-user-plus icon"></i>
+                        <span>Register</span>
+                    </a>
+                </li>
+                {% endif %}
                 {% if user.is_superuser %}
                 <li>
                     <a href="{% url 'createClass' %}">
@@ -105,19 +112,6 @@
                             <a class="link-footer" href="{% url 'logout' %}">
                                 <i class="fa-solid fa-right-from-bracket icon"></i>
                                 <span>Log out</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li>
-                            <a class="link-footer" href="{% url 'login' %}">
-                                <i class="fa-solid fa-right-to-bracket icon"></i>
-                                <span>Login</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="link-footer" href="{% url 'register' %}">
-                                <i class="fa-solid fa-user-plus icon"></i>
-                                <span>Register</span>
                             </a>
                         </li>
                     {% endif %}
