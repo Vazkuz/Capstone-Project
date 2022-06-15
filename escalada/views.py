@@ -319,7 +319,13 @@ def bookingSubmitted(request):
         "bookClimbForm": bookClimbForm,
         "error_message": "Error: " + list(booking_form.errors.as_data()['__all__'][0])[0]
     })
-            
+
+@login_required
+def myCoupons(request):
+    myCoupons = MyCoupon.objects.filter(climber = request.user)
+    return render(request, "escalada/my_coupons.html", {
+        "myCoupons": myCoupons
+    })
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

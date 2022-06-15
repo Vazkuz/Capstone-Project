@@ -1,0 +1,32 @@
+{% extends 'escalada/layout.html' %}
+
+{% block body %}
+    <h3 class="title">My Coupons</h3>
+        {% if myCoupons|length > 0 %}
+            <p>You have the following coupons:</p>
+            <div class="coupons-container">
+                {% for myCoupon in myCoupons %}
+                <div class="border" style="padding: 0;">
+                    {% if myCoupon.coupon.climbPassType %}
+                    <div class="card-header-pass"style="height: 15px;"></div>
+                        <div class="card-body">
+                            <h4>{{myCoupon.coupon.climbPassType}}</h4>
+                            <p>Free climb coupon</p>
+                            <p>Number of tickets available: {{myCoupon.ticketsAvailable}}</p>
+                    {% else %}
+                    <div class="card-header-class"style="height: 15px;"></div>
+                        <div class="card-body">
+                            <h4>{{myCoupon.coupon.classType}}</h4>
+                            <p>Coupon available for {{myCoupon.coupon.numberOfWeeks}} weeks of class</p>
+                            <p>One-time use only</p>
+                    {% endif %}
+                            <p>Original price: S/ {{myCoupon.coupon.price}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p><em>You don't have any coupons, <a href="{% url 'buyCoupon' %}">wanna buy one</a>?</em></p>
+        {% endif %}
+{% endblock body %}
+

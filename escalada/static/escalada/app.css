@@ -4,6 +4,35 @@ body{
     padding: 15px 25px;
 }
 
+.card-header-pass{
+    background-color: var(--free-climb-color);
+}
+
+.card-header-class{
+    background-color: var(--climb-class-color);
+}
+
+.title{
+    text-align: center;
+}
+
+.coupons-container{
+    justify-content: center;
+    display: flex;
+
+}
+
+.border{
+    display: inline-block; 
+    margin-bottom: 20px;
+    margin-right: 40px;
+    min-width: 45rem;
+    /* min-height: 30rem; */
+    text-align: center;
+    /* width: 100%; */
+    padding: 10px;
+}
+
 #calendar{
     padding: 10px;
 }
@@ -16,7 +45,7 @@ body{
     width: 250px;
     height: 100vh;
     position: fixed;
-    background-color: #28727d;
+    background-color: var(--primary-color);
     color: #ece2d6;
     top: 0;
     left: 0;
@@ -131,8 +160,11 @@ body{
 
 :root{
     /*======== Colors ========*/
+    --primary-color: #28727d;
     --hover-color: #33287d;
     --login-out-color: #7d2848;
+    --free-climb-color: #28487d;
+    --climb-class-color: #7d2872;
 
 
     /*======== Transition ========*/
