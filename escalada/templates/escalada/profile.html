@@ -47,16 +47,9 @@
                 </div>
                 {% endfor %}
             </div>
-        {% else %}
-        <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
-        {% endif %}
-    </div>
-    <div class="next-class">
-        <h3 class="subtitle">Next Class</h3>
-        {% if nextLesson %}
             <p align="center">Your next class is: {{nextLesson.class_date}} at {{nextLesson.climbClass.begin_time}}</p>
         {% else %}
-        <p align="center"><em>You are not enroll in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
+        <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
         {% endif %}
     </div>
 
