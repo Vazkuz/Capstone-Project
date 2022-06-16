@@ -4,6 +4,15 @@ body{
     padding: 15px 25px;
 }
 
+hr {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 96%;               
+    background-color: black;
+    height: 1px;
+  }
+
 .card-header-pass{
     background-color: var(--free-climb-color);
 }
@@ -12,25 +21,23 @@ body{
     background-color: var(--climb-class-color);
 }
 
-.title{
+#title{
     text-align: center;
 }
 
 .coupons-container{
     justify-content: center;
-    display: flex;
-
+    display:flex;
+    flex-wrap: wrap;
 }
 
-.border{
-    display: inline-block; 
-    margin-bottom: 20px;
-    margin-right: 40px;
+.border{    
+    display: inline-block;
+    margin: 35px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     min-width: 45rem;
-    /* min-height: 30rem; */
     text-align: center;
-    /* width: 100%; */
-    padding: 10px;
 }
 
 #calendar{
@@ -138,8 +145,12 @@ body{
         margin-left: 0;
     }
 
+    #profile-info{
+        text-align: center;
+    }
+
     #navBar{
-        width: 100vw;
+        width: 45vw;
         transform: translateX(-1000px);
         transition: transform 500ms;
     }
@@ -150,9 +161,11 @@ body{
 
     .nav-items > li{
         text-align: center;
+        margin: auto;
     }
 
     #hamburgerBtn{
+        font-size: 20px;
         display: inline-block;
     }
 }

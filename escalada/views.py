@@ -321,9 +321,11 @@ def bookingSubmitted(request):
     })
 
 @login_required
-def myCoupons(request):
-    myCoupons = MyCoupon.objects.filter(climber = request.user)
-    return render(request, "escalada/my_coupons.html", {
+def profile(request, user_id):
+    user = request.user
+    myCoupons = MyCoupon.objects.filter(climber = user_id)
+    return render(request, "escalada/profile.html", {
+        "user": user,
         "myCoupons": myCoupons
     })
 

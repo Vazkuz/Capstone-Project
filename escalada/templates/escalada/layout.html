@@ -45,21 +45,15 @@
                 </li>
                 {% if user.is_authenticated %}
                 <li>
+                    <a href="{% url 'profile' user.id %}">
+                        <i class="fa-solid fa-user icon"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'my_calendar' %}">
                         <i class="fa-regular fa-calendar-check icon"></i>
                         <span>Calendar</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa-solid fa-person-chalkboard icon"></i>
-                        <span>My Classes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'myCoupons' %}">
-                        <i class="fa-solid fa-ticket icon"></i>
-                        <span>My Coupons</span>
                     </a>
                 </li>
                 <li>
@@ -76,7 +70,7 @@
                 </li>
                 <li>
                     <a href="bookAClimb">
-                        <i class="fa-regular fa-bookmark icon"></i>
+                        <i class="fa-solid fa-bookmark icon"></i>
                         <span>Book a Climb</span>
                     </a>
                 </li>
