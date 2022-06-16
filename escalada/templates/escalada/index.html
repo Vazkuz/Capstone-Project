@@ -5,20 +5,21 @@
     <body>
         <div id="index">
             <h3>This is your climbing site!</h3>
-            <div class="uk-width-1-1">
+            <div class="coupons-container">
             {% for availableClass in availableClasses %}
-                <div class="card" style="width: 22rem;">
-                    <div class="card-body">
-                    <h4 class="text-card-title">{{availableClass.classType}}</h4>
-                    <p><h6 class="card-subtitle mb-2 text-muted"> {{availableClass.classType.durationInHours}} hours | {{availableClass.lessonDay}}</h6></p>
-                    <p><h6 class="card-subtitle mb-2 text-muted"> {{availableClass.begin_time}}</h6></p>
-                    {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> {% endcomment %}
-                    {% if user.is_authenticated %}
-                        <a href="#" class="enroll-link" data-climbclass={{availableClass.id}}>Enroll!</a>
-                        <a href="#" class="buy-coupon-link" data-climbclass={{availableClass.classType}}>Buy a coupon</a>
-                    {% endif %}
+                    <div class="border">
+                        <div class="card-header-class"></div>
+                        <div class="card-body">
+                            <h4 class="text-card-title">{{availableClass.classType}}</h4>
+                            <p><h6 class="card-subtitle mb-2 text-muted"> {{availableClass.classType.durationInHours}} hours | {{availableClass.lessonDay}}</h6></p>
+                            <p><h6 class="card-subtitle mb-2 text-muted"> {{availableClass.begin_time}}</h6></p>
+                            {% comment %} <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> {% endcomment %}
+                            {% if user.is_authenticated %}
+                                <a href="#" class="enroll-link" data-climbclass={{availableClass.id}}>Enroll!</a>
+                                <a href="#" class="buy-coupon-link" data-climbclass={{availableClass.classType}}>Buy a coupon</a>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
             {% empty %}
                 <em>No classes available.</em>
             {% endfor %}
