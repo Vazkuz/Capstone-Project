@@ -248,7 +248,10 @@ def bookAClimb(request):
 @login_required
 def bookingSubmitted(request):
     booking_form = FreeClimbFormClimber(request.POST)
-    climbPassType = ClimbPassType(pk=request.POST.get('climbPassType'))
+    climbPassType = ClimbPassType.objects.filter(pk=request.POST.get('climbPassType'))
+    climbPassType_instance = climbPassType.get(pk=request.POST.get('climbPassType'))
+    durationInHours = climbPassType_instance.durationInHours
+    maxClimbersForPassType = climbPassType_instance.maxClimbers
     coupon = Coupon(pk=request.POST.get('coupon'))
     date_ofClimb = request.POST.get('date')
     begin_time = request.POST.get('begin_time')
@@ -256,13 +259,22 @@ def bookingSubmitted(request):
     if booking_form.is_valid():
         if request.method == 'POST':
             climber = request.user
-            todays_climbs = FreeClimb.objects.filter(climbPassType=climbPassType, date=date_ofClimb)
-            my_climbs_today = FreeClimb.objects.filter(climber=climber, climbPassType=climbPassType, date=date_ofClimb)
+            my_climbs_today = FreeClimb.objects.filter(climber=climber, climbPassType__in=climbPassType, date=date_ofClimb)
             my_lessons_today = Lesson.objects.filter(climbers__in = [climber], class_date = date_ofClimb)
             my_lessons_today_bt = ClimbClass.objects.filter(pk__in=my_lessons_today.values('climbClass')).values('begin_time')
-            begin_time_plus = (datetime.combine(date(1,1,1),begin_time) + timedelta(hours=climbPassType.durationInHours)).time()
-            begin_time_minus = (datetime.combine(date(1,1,1),begin_time) - timedelta(hours=climbPassType.durationInHours)).time()
-            todays_climbs.filter(begin_time__gte=begin_time, )
+            begin_time_plus = (datetime.combine(date(1,1,1),begin_time) + timedelta(hours=durationInHours)).time()
+            begin_time_minus = (datetime.combine(date(1,1,1),begin_time) - timedelta(hours=durationInHours)).time()
+            
+            todays_climbs = FreeClimb.objects.filter(climbPassType__in=climbPassType, date=date_ofClimb)
+            possible_conflicts = todays_climbs.filter(begin_time__gt=begin_time_plus, end_time__lt=begin_time)
+            if possible_conflicts:
+                print(possible_conflicts)
+                if possible_conflicts.count() >= maxClimbersForPassType:
+                    bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
+                    return render(request, "escalada/bookAClimb.html", {
+                    "bookClimbForm": bookClimbForm,
+                    "error_message": f"Error: You can't book this climb because this hour is full (there are {maxClimbersForPassType} climbers)."
+                    })
             if my_climbs_today.filter(begin_time = begin_time):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
@@ -313,7 +325,7 @@ def bookingSubmitted(request):
                         "error_message": f"Error: You don't have a coupon for that climb"
                     })
                     
-                newClimbBooked = FreeClimb(climber=climber, coupon = coupon,climbPassType=climbPassType, date=date_ofClimb, begin_time= begin_time)
+                newClimbBooked = FreeClimb(climber=climber, coupon = coupon, climbPassType=climbPassType_instance, date=date_ofClimb, begin_time= begin_time)
                 newClimbBooked.save()
                 UseTicket(climber, coupon)
                 return HttpResponseRedirect(reverse("index"))
