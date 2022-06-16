@@ -256,44 +256,46 @@ def bookingSubmitted(request):
     if booking_form.is_valid():
         if request.method == 'POST':
             climber = request.user
-            todays_climbs = FreeClimb.objects.filter(climber=climber, climbPassType=climbPassType, date=date_ofClimb)
-            todays_lessons = Lesson.objects.filter(climbers__in = [climber], class_date = date_ofClimb)
-            todays_lessons_bt = ClimbClass.objects.filter(pk__in=todays_lessons.values('climbClass')).values('begin_time')
+            todays_climbs = FreeClimb.objects.filter(climbPassType=climbPassType, date=date_ofClimb)
+            my_climbs_today = FreeClimb.objects.filter(climber=climber, climbPassType=climbPassType, date=date_ofClimb)
+            my_lessons_today = Lesson.objects.filter(climbers__in = [climber], class_date = date_ofClimb)
+            my_lessons_today_bt = ClimbClass.objects.filter(pk__in=my_lessons_today.values('climbClass')).values('begin_time')
             begin_time_plus = (datetime.combine(date(1,1,1),begin_time) + timedelta(hours=climbPassType.durationInHours)).time()
             begin_time_minus = (datetime.combine(date(1,1,1),begin_time) - timedelta(hours=climbPassType.durationInHours)).time()
-            if todays_climbs.filter(begin_time = begin_time):
+            todays_climbs.filter(begin_time__gte=begin_time, )
+            if my_climbs_today.filter(begin_time = begin_time):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You have already booked for this hour."
                 })
             # A climber can't book a climb that conflicts with another free climb
-            elif todays_climbs.filter(begin_time__gt = begin_time) and todays_climbs.filter(begin_time__lt = begin_time_plus):
+            elif my_climbs_today.filter(begin_time__gt = begin_time) and my_climbs_today.filter(begin_time__lt = begin_time_plus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You can't book this climb, it starts just before the start of another climb you've already booked."
                 })
-            elif todays_climbs.filter(begin_time__lt = begin_time) and todays_climbs.filter(begin_time__gt = begin_time_minus):
+            elif my_climbs_today.filter(begin_time__lt = begin_time) and my_climbs_today.filter(begin_time__gt = begin_time_minus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You can't book this climb, it starts just after the start of another climb you've already booked."
                 })
             # Prevent conflicts: free climbs cannot conflict with classes
-            elif todays_lessons_bt.filter(begin_time = begin_time):
+            elif my_lessons_today_bt.filter(begin_time = begin_time):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
                 })
-            elif todays_lessons_bt.filter(begin_time__gt = begin_time) and todays_lessons_bt.filter(begin_time__lt = begin_time_plus):
+            elif my_lessons_today_bt.filter(begin_time__gt = begin_time) and my_lessons_today_bt.filter(begin_time__lt = begin_time_plus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
                 "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
                 })
-            elif todays_lessons_bt.filter(begin_time__lt = begin_time) and todays_lessons_bt.filter(begin_time__gt = begin_time_minus):
+            elif my_lessons_today_bt.filter(begin_time__lt = begin_time) and my_lessons_today_bt.filter(begin_time__gt = begin_time_minus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
@@ -323,14 +325,14 @@ def bookingSubmitted(request):
 
 @login_required
 def profile(request, user_id):
-    if user_id == request.user.id:
-        user = request.user
-        myLessons = Lesson.objects.filter(climbers__in = [user], class_date__gte = datetime.today())
+    if user_id == request.user.id or request.user.is_superuser:
+        profile_user = User.objects.get(pk=user_id)
+        myLessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = datetime.today())
         myEnrollments = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
         nextLesson = myLessons.order_by("class_date").first()
         myCoupons = MyCoupon.objects.filter(climber = user_id)
         return render(request, "escalada/profile.html", {
-            "user": user,
+            "profile_user": profile_user,
             "myCoupons": myCoupons,
             "nextLesson": nextLesson,
             "myEnrollments": myEnrollments
