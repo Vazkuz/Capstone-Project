@@ -33,7 +33,7 @@
     </div>
     <div class="my-enrollments">
         <h3 class='subtitle'>My Classes</h3>
-        {% if myEnrollments %}
+        {% if myEnrollments|length > 0 %}
             <div class="coupons-container">
                 {% for myEnrollment, remaining_classes in myEnrollments %}
                 <div class="border">
