@@ -31,10 +31,11 @@ def newClass(request):
     if request.method == 'POST':
         classType = ClassType.objects.get(pk=request.POST["classType"])
         lessonDay = request.POST.getlist('lessonDay')
+        begin_time = datetime.strptime(request.POST.get('begin_time'), '%H:%M:%S').time()
         if len(lessonDay) > 0:
-            newClass = ClimbClass(classType=classType, lessonDay=lessonDay)
+            newClass = ClimbClass(classType=classType, lessonDay=lessonDay, begin_time=begin_time)
         else:
-            newClass = ClimbClass(classType=classType)
+            newClass = ClimbClass(classType=classType, begin_time=begin_time)
             
         if class_form.is_valid():
             newClass.save()
