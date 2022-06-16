@@ -46,6 +46,7 @@ hr {
 
 #calendar{
     padding: 10px;
+    z-index: 1;
 }
 
 #escalada-brand{
@@ -107,7 +108,7 @@ hr {
     background-color: var(--login-out-color);
 }
 
-.fc-daygrid-day:hover{
+.fc-daygrid-day-number:hover{
     cursor: pointer;
 }
 
@@ -157,6 +158,7 @@ hr {
         width: 45vw;
         transform: translateX(-1000px);
         transition: transform 500ms;
+        z-index: 5;
     }
 
     #navBar.open{
