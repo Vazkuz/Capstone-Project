@@ -35,13 +35,14 @@
         <h3 class='subtitle'>My Classes</h3>
         {% if myEnrollments %}
             <div class="coupons-container">
-                {% for myEnrollment in myEnrollments %}
+                {% for myEnrollment, remaining_classes in myEnrollments %}
                 <div class="border">
                     <div class="card-header-class"></div>
                         <div class="card-body">
                             <h4>{{myEnrollment.classType}}</h4>
                             <p>Class days: {{myEnrollment.lessonDay}}</p>
                             <p>Begin time: {{myEnrollment.begin_time}}</p>
+                            <p>Remaining classes: {{remaining_classes.climbClass__count}}</p>
                     </div>
                 </div>
                 {% endfor %}

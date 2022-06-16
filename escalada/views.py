@@ -9,6 +9,7 @@ from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Les
 from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber
 from datetime import datetime, date, time, timedelta
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 
 # Create your views here.
 def index(request):
@@ -268,7 +269,6 @@ def bookingSubmitted(request):
             todays_climbs = FreeClimb.objects.filter(climbPassType__in=climbPassType, date=date_ofClimb)
             possible_conflicts = todays_climbs.filter(begin_time__gt=begin_time_plus, end_time__lt=begin_time)
             if possible_conflicts:
-                print(possible_conflicts)
                 if possible_conflicts.count() >= maxClimbersForPassType:
                     bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                     return render(request, "escalada/bookAClimb.html", {
@@ -341,6 +341,8 @@ def profile(request, user_id):
         profile_user = User.objects.get(pk=user_id)
         myLessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = datetime.today())
         myEnrollments = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
+        remaining_classes = myLessons.values('climbClass').annotate(Count('climbClass'))
+        myEnrollments = zip(myEnrollments, remaining_classes)
         nextLesson = myLessons.order_by("class_date").first()
         myCoupons = MyCoupon.objects.filter(climber = user_id)
         return render(request, "escalada/profile.html", {
