@@ -10,13 +10,13 @@
                     {% for myCoupon in myCoupons %}
                     <div class="border">
                         {% if myCoupon.coupon.climbPassType %}
-                        <div class="card-header-pass"style="height: 15px;"></div>
+                        <div class="card-header-pass"></div>
                             <div class="card-body">
                                 <h4>{{myCoupon.coupon.climbPassType}}</h4>
                                 <p>Free climb coupon</p>
                                 <p>Number of tickets available: {{myCoupon.ticketsAvailable}}</p>
                         {% else %}
-                        <div class="card-header-class"style="height: 15px;"></div>
+                        <div class="card-header-pass"></div>
                             <div class="card-body">
                                 <h4>{{myCoupon.coupon.classType}}</h4>
                                 <p>Coupon available for {{myCoupon.coupon.numberOfWeeks}} weeks of class</p>
@@ -31,6 +31,25 @@
                 <p align="center"><em>You don't have any coupons, <a href="{% url 'buyCoupon' %}">wanna buy one</a>?</em></p>
             {% endif %}
     </div>
+    <div class="my-enrollments">
+        <h3 class='subtitle'>My Classes</h3>
+        {% if myEnrollments %}
+            <div class="coupons-container">
+                {% for myEnrollment in myEnrollments %}
+                <div class="border">
+                    <div class="card-header-class"></div>
+                        <div class="card-body">
+                            <h4>{{myEnrollment.classType}}</h4>
+                            <p>Class days: {{myEnrollment.lessonDay}}</p>
+                            <p>Begin time: {{myEnrollment.begin_time}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+        <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
+        {% endif %}
+    </div>
     <div class="next-class">
         <h3 class="subtitle">Next Class</h3>
         {% if nextLesson %}
@@ -39,5 +58,6 @@
         <p align="center"><em>You are not enroll in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
         {% endif %}
     </div>
+
 {% endblock body %}
 

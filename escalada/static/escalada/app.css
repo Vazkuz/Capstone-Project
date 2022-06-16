@@ -14,11 +14,15 @@ hr {
   }
 
 .card-header-pass{
-    background-color: var(--free-climb-color);
+    background-color: var(--coupon-header-color);
 }
 
 .card-header-class{
-    background-color: var(--climb-class-color);
+    background-color: var(--class-header-color);
+}
+
+.card-header-class, .card-header-pass{
+    height: 15px;
 }
 
 .subtitle{
@@ -176,8 +180,9 @@ hr {
     --primary-color: #28727d;
     --hover-color: #33287d;
     --login-out-color: #7d2848;
-    --free-climb-color: #28487d;
-    --climb-class-color: #7d2872;
+    --coupon-header-color: #28487d;
+    /* --climb-class-color: #7d2872; */
+    --class-header-color: #5d287d;
 
 
     /*======== Transition ========*/

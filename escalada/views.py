@@ -325,12 +325,15 @@ def bookingSubmitted(request):
 def profile(request, user_id):
     if user_id == request.user.id:
         user = request.user
-        nextLesson = Lesson.objects.filter(climbers__in = [user], class_date__gte = datetime.today()).order_by("class_date").first()
+        myLessons = Lesson.objects.filter(climbers__in = [user], class_date__gte = datetime.today())
+        myEnrollments = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
+        nextLesson = myLessons.order_by("class_date").first()
         myCoupons = MyCoupon.objects.filter(climber = user_id)
         return render(request, "escalada/profile.html", {
             "user": user,
             "myCoupons": myCoupons,
-            "nextLesson": nextLesson
+            "nextLesson": nextLesson,
+            "myEnrollments": myEnrollments
         })
     else:
         return HttpResponseRedirect(reverse('index'))
