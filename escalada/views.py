@@ -323,12 +323,20 @@ def bookingSubmitted(request):
 
 @login_required
 def profile(request, user_id):
-    user = request.user
-    myCoupons = MyCoupon.objects.filter(climber = user_id)
-    return render(request, "escalada/profile.html", {
-        "user": user,
-        "myCoupons": myCoupons
-    })
+    if user_id == request.user.id:
+        user = request.user
+        nextLesson = Lesson.objects.filter(climbers__in = [user], class_date__gte = datetime.today()).order_by("class_date").first()
+        print("__________________________________________________________________________________")
+        print(nextLesson)
+        print("__________________________________________________________________________________")
+        myCoupons = MyCoupon.objects.filter(climber = user_id)
+        return render(request, "escalada/profile.html", {
+            "user": user,
+            "myCoupons": myCoupons,
+            "nextLesson": nextLesson
+        })
+    else:
+        return HttpResponseRedirect(reverse('index'))
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
