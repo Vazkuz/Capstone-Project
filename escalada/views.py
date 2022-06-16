@@ -326,9 +326,6 @@ def profile(request, user_id):
     if user_id == request.user.id:
         user = request.user
         nextLesson = Lesson.objects.filter(climbers__in = [user], class_date__gte = datetime.today()).order_by("class_date").first()
-        print("__________________________________________________________________________________")
-        print(nextLesson)
-        print("__________________________________________________________________________________")
         myCoupons = MyCoupon.objects.filter(climber = user_id)
         return render(request, "escalada/profile.html", {
             "user": user,
