@@ -20,19 +20,29 @@
             events: [
                 {% for lesson in myLessons %}
                     {
+                        id: {{lesson.id}},
                         title: "Clase de escalada",
                         start: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.begin_time | date:'G:i:s'}}",
                         end: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.end_time | date:'G:i:s'}}",
+                        extendedProps: {
+                          climbers: {{lesson.id}}
+                        }
                     },
                 {% endfor %}
                 {% for climb in myClimbs %}
                     {
+                        id: {{climb.id}},
                         title: "Escalada libre",
                         start: "{{ climb.date | date:'Y-m-d'}}T{{climb.begin_time | date:'G:i:s'}}",
                         end: "{{ climb.date | date:'Y-m-d'}}T{{climb.end_time | date:'G:i:s'}}",
                     },
                 {% endfor %}
             ],
+            eventClick: function(info) {
+                {% if gymCalendar %}
+                    alert('Event: ' + info.event.id);
+                {% endif %}
+              },            
             dateClick: function(info) {
                 calendar.gotoDate(info.date);
                 calendar.changeView('timeGridDay');

@@ -18,4 +18,6 @@ urlpatterns = [
     path("bookAClimb", views.bookAClimb, name="bookAClimb"),
     path("bookingSubmitted", views.bookingSubmitted, name="bookingSubmitted"),
     path("profile/<int:user_id>", views.profile, name="profile"),
+    path("gymCalendar", views.gymCalendar, name="gymCalendar"),
+    path("lesson/<int:lesson_id>", views.lesson_view, name="lesson")
 ]

@@ -108,7 +108,7 @@ hr {
     background-color: var(--login-out-color);
 }
 
-.fc-daygrid-day-number:hover{
+.fc-daygrid-day-number:hover, .fc-event:hover{
     cursor: pointer;
 }
 

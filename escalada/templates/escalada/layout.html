@@ -34,7 +34,7 @@
         <nav id="navBar">
             <div class="nav-brand">
                 <p id="escalada-brand">Escalada</p>
-                <p><em>Your climbing site!</em></p>
+                <p style=""><em>Your climbing site!</em></p>
             </div>
             <ul class="nav-items">
                 <li>
@@ -53,7 +53,7 @@
                 <li>
                     <a href="{% url 'my_calendar' %}">
                         <i class="fa-regular fa-calendar-check icon"></i>
-                        <span>Calendar</span>
+                        <span>My Calendar</span>
                     </a>
                 </li>
                 <li>
@@ -89,6 +89,12 @@
                 </li>
                 {% endif %}
                 {% if user.is_superuser %}
+                <li>
+                    <a href="{% url 'gymCalendar' %}">
+                        <i class="fa-solid fa-calendar-plus icon"></i>
+                        <span>Gym Calendar</span>
+                    </a>
+                </li>
                 <li>
                     <a href="{% url 'createClass' %}">
                         <i class="fa-solid fa-circle-plus icon"></i>

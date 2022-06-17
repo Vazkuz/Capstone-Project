@@ -353,6 +353,22 @@ def profile(request, user_id):
         })
     else:
         return HttpResponseRedirect(reverse('index'))
+    
+
+@staff_member_required(login_url=reverse_lazy('index'))
+def gymCalendar(request):
+    lessons = Lesson.objects.all()
+    climbs = FreeClimb.objects.all()
+    gymCalendar = True
+    return render(request, "escalada/calendar.html",{
+        "myLessons": lessons,
+        "myClimbs": climbs,
+        "gymCalendar": gymCalendar
+    })
+    
+@staff_member_required(login_url=reverse_lazy('index'))
+def lesson_view(request, lesson_id):
+    pass
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
