@@ -142,7 +142,7 @@ hr {
 }
 
 .lesson-container{
-    z-index: 2;
+    z-index: 12;
     position: absolute;
     background-color: rgba(0, 0, 0, 0.7);
     width: 100vw;
@@ -164,7 +164,7 @@ hr {
     height: 300px;
 
     margin: auto;
-    z-index: 2;
+    z-index: 15;
 }
 
 #hamburgerBtn:hover{
