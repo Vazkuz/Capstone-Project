@@ -139,7 +139,8 @@ class Lesson(models.Model):
             "id": self.id,
             "begin_time": self.climbClass.begin_time,
             "end_time": self.climbClass.end_time,
-            "climbers": climbers_dict
+            "climbers": climbers_dict,
+            "durationInHours": self.climbClass.classType.durationInHours
         }
     
 class FreeClimb(models.Model):
