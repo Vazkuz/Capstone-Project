@@ -135,12 +135,16 @@ class Lesson(models.Model):
     def serialize(self):
         climbers_list = list(self.climbers.values('id', 'username', 'first_name', 'last_name'))
         climbers_dict = dict(zip(range(len(climbers_list)), climbers_list))
+        lessonDays = ""
+        for day in self.climbClass.lessonDay:
+            lessonDays += f"{LessonDay[int(day)][1]}, "
+        lessonDays = lessonDays[:-2]
         return{
             "id": self.id,
             "begin_time": self.climbClass.begin_time,
             "end_time": self.climbClass.end_time,
             "climbers": climbers_dict,
-            "lessonDays": self.climbClass.lessonDay,
+            "lessonDays": lessonDays,
             "durationInHours": self.climbClass.classType.durationInHours
         }
     
