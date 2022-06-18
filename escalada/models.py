@@ -132,6 +132,16 @@ class Lesson(models.Model):
     def getClimbClass(self):
         return self.climbClass
     
+    def serialize(self):
+        climbers_list = list(self.climbers.values('id', 'username', 'first_name', 'last_name'))
+        climbers_dict = dict(zip(range(len(climbers_list)), climbers_list))
+        return{
+            "id": self.id,
+            "begin_time": self.climbClass.begin_time,
+            "end_time": self.climbClass.end_time,
+            "climbers": climbers_dict
+        }
+    
 class FreeClimb(models.Model):
     climber = models.ForeignKey(User, related_name="freeClimber", on_delete=models.CASCADE)
     climbPassType = models.ForeignKey(ClimbPassType, on_delete=models.CASCADE)

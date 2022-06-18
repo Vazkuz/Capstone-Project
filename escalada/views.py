@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Lesson, MyCoupon, User
 from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber
@@ -354,7 +355,6 @@ def profile(request, user_id):
     else:
         return HttpResponseRedirect(reverse('index'))
     
-
 @staff_member_required(login_url=reverse_lazy('index'))
 def gymCalendar(request):
     lessons = Lesson.objects.all()
@@ -366,9 +366,12 @@ def gymCalendar(request):
         "gymCalendar": gymCalendar
     })
     
+@csrf_exempt    
 @staff_member_required(login_url=reverse_lazy('index'))
 def lesson_view(request, lesson_id):
-    pass
+    data=Lesson.objects.get(pk=lesson_id).serialize()
+    if request.method == 'GET':
+        return JsonResponse(data)
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
