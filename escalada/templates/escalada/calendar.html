@@ -9,10 +9,19 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         var lesson_container = document.querySelector('.lesson-container');
+        lesson_container.onclick = e => {
+            if(e.target === e.currentTarget){
+                if (window.getComputedStyle(lesson_container, null).display == 'none'){
+                    lesson_container.setAttribute("style", "display: inline;");
+                }
+                else{
+                    lesson_container.setAttribute("style", "display: none;");
+                }
+            }
+        }
         var lesson_info = document.querySelector('.lesson-info');
         var calendarEl = document.getElementById('calendar');
         var navBarWidth = document.querySelector('#navBar').offsetWidth;
-        console.log(navBarWidth);
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: {
@@ -44,19 +53,27 @@
             ],
             {% if gymCalendar %}
             eventClick: function(info) {
-                    console.log(info.jsEvent.pageX + ',' + info.jsEvent.pageY);
                     fetch(`/lesson/${info.event.id}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
-                        console.log(window.getComputedStyle(lesson_container, null).display == 'none');
                         if (window.getComputedStyle(lesson_container, null).display == 'none'){
                             lesson_container.setAttribute("style", "display: inline;");
                         }
                         else{
                             lesson_container.setAttribute("style", "display: none;");
                         }
-                        //alert('Event: ' + data);
+
+                        lesson_info.innerHTML = "<p>Students:</p>"
+                        obj = data.climbers;
+                        for(var key in obj){
+                            if (obj.hasOwnProperty(key)){
+                                var value=obj[key];
+                                lesson_info.innerHTML += `<p>${value.first_name} ${value.last_name}</p>`;
+                            }
+                        }
+                        
+                        //lesson_info.innerHTML = data.begin_time;
                     })
               },
             {% endif %}
@@ -67,16 +84,6 @@
             
         });
         calendar.render();
-        lesson_container.onclick = e => {
-            if(e.target === e.currentTarget){
-                if (window.getComputedStyle(lesson_container, null).display == 'none'){
-                    lesson_container.setAttribute("style", "display: inline;");
-                }
-                else{
-                    lesson_container.setAttribute("style", "display: none;");
-                }
-            }
-        }
     });
 
     </script>
@@ -84,7 +91,6 @@
 {% block body %}
     <div class="lesson-container" style="display: none;">
         <div class="lesson-info">
-            Clase de escalada
         </div>
     </div>
     <div id='calendar' class="container">
