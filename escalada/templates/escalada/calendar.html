@@ -8,7 +8,11 @@
     <script>
 
     document.addEventListener('DOMContentLoaded', function() {
+        var lesson_container = document.querySelector('.lesson-container');
+        var lesson_info = document.querySelector('.lesson-info');
         var calendarEl = document.getElementById('calendar');
+        var navBarWidth = document.querySelector('#navBar').offsetWidth;
+        console.log(navBarWidth);
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: {
@@ -38,11 +42,24 @@
                     },
                 {% endfor %}
             ],
+            {% if gymCalendar %}
             eventClick: function(info) {
-                {% if gymCalendar %}
-                    alert('Event: ' + info.event.id);
-                {% endif %}
-              },            
+                    console.log(info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+                    fetch(`/lesson/${info.event.id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        console.log(window.getComputedStyle(lesson_container, null).display == 'none');
+                        if (window.getComputedStyle(lesson_container, null).display == 'none'){
+                            lesson_container.setAttribute("style", "display: inline;");
+                        }
+                        else{
+                            lesson_container.setAttribute("style", "display: none;");
+                        }
+                        //alert('Event: ' + data);
+                    })
+              },
+            {% endif %}
             dateClick: function(info) {
                 calendar.gotoDate(info.date);
                 calendar.changeView('timeGridDay');
@@ -50,11 +67,26 @@
             
         });
         calendar.render();
+        lesson_container.onclick = e => {
+            if(e.target === e.currentTarget){
+                if (window.getComputedStyle(lesson_container, null).display == 'none'){
+                    lesson_container.setAttribute("style", "display: inline;");
+                }
+                else{
+                    lesson_container.setAttribute("style", "display: none;");
+                }
+            }
+        }
     });
 
     </script>
 {% endblock script %}
 {% block body %}
+    <div class="lesson-container" style="display: none;">
+        <div class="lesson-info">
+            Clase de escalada
+        </div>
+    </div>
     <div id='calendar' class="container">
 
     </div>

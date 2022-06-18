@@ -141,6 +141,32 @@ hr {
     z-index: 10;
 }
 
+.lesson-container{
+    z-index: 2;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.lesson-info{
+    background-color: var(--primary-color);
+    position: absolute;
+
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    width: 300px;
+    height: 300px;
+
+    margin: auto;
+    z-index: 2;
+}
+
 #hamburgerBtn:hover{
     cursor: pointer;
 }
