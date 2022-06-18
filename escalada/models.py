@@ -140,6 +140,7 @@ class Lesson(models.Model):
             "begin_time": self.climbClass.begin_time,
             "end_time": self.climbClass.end_time,
             "climbers": climbers_dict,
+            "lessonDays": self.climbClass.lessonDay,
             "durationInHours": self.climbClass.classType.durationInHours
         }
     
