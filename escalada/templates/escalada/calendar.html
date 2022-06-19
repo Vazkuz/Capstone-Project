@@ -19,6 +19,7 @@
                 }
             }
         }
+
         var lesson_info = document.querySelector('.lesson-info');
         var calendarEl = document.getElementById('calendar');
         var navBarWidth = document.querySelector('#navBar').offsetWidth;
@@ -63,17 +64,20 @@
                         else{
                             lesson_container.setAttribute("style", "display: none;");
                         }
+                        
+                        lesson_info.querySelector(".card-subtitle").innerHTML = `${data.lessonDays} | ${data.begin_time} - ${data.end_time}`;
 
-                        lesson_info.innerHTML = "<p>Students:</p>"
+                        lesson_info.querySelector(".card-text").innerHTML = "Students:<ul>"
                         obj = data.climbers;
                         for(var key in obj){
                             if (obj.hasOwnProperty(key)){
                                 var value=obj[key];
-                                lesson_info.innerHTML += `<p>${value.first_name} ${value.last_name}</p>`;
+                                lesson_info.querySelector(".card-text").innerHTML += `<li>${value.first_name} ${value.last_name}</li>`;
                             }
                         }
-                        
-                        //lesson_info.innerHTML = data.begin_time;
+                        lesson_info.querySelector(".card-text").innerHTML += "</ul>";
+
+                        lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Class date: ${data.class_date}</em>`;
                     })
               },
             {% endif %}
@@ -90,7 +94,15 @@
 {% endblock script %}
 {% block body %}
     <div class="lesson-container" style="display: none;">
-        <div class="lesson-info">
+        <div class="lesson-info card">
+            <div class="card-body">
+                <h5 class="card-title">Clase de escalada</h5>
+                <div class="card-header-info"></div>
+                <h6 class="card-subtitle">Card subtitle</h6>
+                <div class="card-header-info"></div>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <p class="card-info-footer">Class footer</p>
+            </div>
         </div>
     </div>
     <div id='calendar' class="container">

@@ -25,6 +25,12 @@ hr {
     height: 15px;
 }
 
+.card-header-info{
+    height: 0px;
+    margin-top: 0px;
+    margin-bottom: 15px;
+}
+
 .subtitle{
     text-align: center;
 }
@@ -58,7 +64,7 @@ hr {
     height: 100vh;
     position: fixed;
     background-color: var(--primary-color);
-    color: #ece2d6;
+    color: var(--secondary-color);
     top: 0;
     left: 0;
     padding: 30px 20px;
@@ -94,7 +100,7 @@ hr {
     display: flex;
     text-align: left;
     align-items: center;
-    color: #ece2d6;
+    color: var(--secondary-color);
     transition: var(--tran-02);
 }
 
@@ -152,6 +158,18 @@ hr {
 }
 
 .lesson-info{
+    border-radius: 15px;
+}
+
+.card-title{
+    text-align: center;
+}
+
+.lesson-info{
+    color: var(--secondary-color);
+}
+
+.lesson-info{
     background-color: var(--primary-color);
     position: absolute;
 
@@ -159,7 +177,6 @@ hr {
     bottom: 0;
     left: 0;
     right: 0;
-
     width: 300px;
     height: 300px;
 
@@ -206,6 +223,7 @@ hr {
 :root{
     /*======== Colors ========*/
     --primary-color: #28727d;
+    --secondary-color: #ece2d6;
     --hover-color: #33287d;
     --login-out-color: #7d2848;
     --coupon-header-color: #28487d;

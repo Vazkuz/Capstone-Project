@@ -141,8 +141,9 @@ class Lesson(models.Model):
         lessonDays = lessonDays[:-2]
         return{
             "id": self.id,
-            "begin_time": self.climbClass.begin_time,
-            "end_time": self.climbClass.end_time,
+            "begin_time": self.climbClass.begin_time.strftime("%I:%M %p"),
+            "end_time": self.climbClass.end_time.strftime("%I:%M %p"),
+            "class_date": self.class_date.strftime("%b %d, %Y"),
             "climbers": climbers_dict,
             "lessonDays": lessonDays,
             "durationInHours": self.climbClass.classType.durationInHours
