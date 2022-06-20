@@ -134,9 +134,6 @@ class Lesson(models.Model):
     
     def serialize(self):
         climbers_list = list(self.climbers.values('id', 'username', 'first_name', 'last_name'))
-        print("________________________________________________________")
-        print(climbers_list)
-        print("________________________________________________________")
         climbers_dict = dict(zip(range(len(climbers_list)), climbers_list))
         lessonDays = ""
         for day in self.climbClass.lessonDay:
