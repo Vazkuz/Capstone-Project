@@ -77,6 +77,7 @@
                         lesson_info.querySelector(".card-subtitle").innerHTML = `${data.lessonDays} | ${data.begin_time} - ${data.end_time}`;
 
                         if(info.event.extendedProps.type === "lesson"){
+                            lesson_info.querySelector(".card-title").innerHTML = "Clase de escalada"
                             lesson_info.querySelector(".card-text").innerHTML = "Students:<ul>";
                             obj = data.climbers;
                             for(var key in obj){
