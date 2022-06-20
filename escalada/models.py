@@ -134,6 +134,9 @@ class Lesson(models.Model):
     
     def serialize(self):
         climbers_list = list(self.climbers.values('id', 'username', 'first_name', 'last_name'))
+        print("________________________________________________________")
+        print(climbers_list)
+        print("________________________________________________________")
         climbers_dict = dict(zip(range(len(climbers_list)), climbers_list))
         lessonDays = ""
         for day in self.climbClass.lessonDay:
@@ -166,6 +169,17 @@ class FreeClimb(models.Model):
     
     def __str__(self):
         return f'{self.climbPassType} climb for {self.climber} {self.date} from {self.begin_time} to {self.end_time}'
+    
+    def serialize(self):
+        climbers_dict = {'id': self.climber.id, 'username': self.climber.username, 'first_name': self.climber.first_name, 'last_name': self.climber.last_name}
+        return{
+            "id": self.id,
+            "begin_time": self.begin_time.strftime("%I:%M %p"),
+            "end_time": self.end_time.strftime("%I:%M %p"),
+            "class_date": self.date.strftime("%b %d, %Y"),
+            "climbers": climbers_dict,
+            "lessonDays": f"Free climb | {self.climbPassType}"
+        }
     
     
 class MyCoupon(models.Model):

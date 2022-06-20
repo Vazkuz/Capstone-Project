@@ -358,19 +358,27 @@ def profile(request, user_id):
     
 @staff_member_required(login_url=reverse_lazy('index'))
 def gymCalendar(request):
-    lessons = Lesson.objects.all()
+    # Free climbs:
     climbs = FreeClimb.objects.all()
+    
+    # Lessons
+    lessons = Lesson.objects.all()
     gymCalendar = True
     return render(request, "escalada/calendar.html",{
         "myLessons": lessons,
         "myClimbs": climbs,
         "gymCalendar": gymCalendar
     })
-    
-@csrf_exempt    
+      
 @staff_member_required(login_url=reverse_lazy('index'))
-def lesson_view(request, lesson_id):
+def lesson_json(request, lesson_id):
     data=Lesson.objects.get(pk=lesson_id).serialize()
+    if request.method == 'GET':
+        return JsonResponse(data)
+  
+@staff_member_required(login_url=reverse_lazy('index'))
+def climb_json(request, climb_id):
+    data=FreeClimb.objects.get(pk=climb_id).serialize()
     if request.method == 'GET':
         return JsonResponse(data)
 

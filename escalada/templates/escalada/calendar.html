@@ -39,22 +39,31 @@
                         start: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.begin_time | date:'G:i:s'}}",
                         end: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.end_time | date:'G:i:s'}}",
                         extendedProps: {
-                          climbers: {{lesson.id}}
+                            type: "lesson",
+                            climbers: {{lesson.id}}
                         }
                     },
                 {% endfor %}
                 {% for climb in myClimbs %}
                     {
                         id: {{climb.id}},
-                        title: "Escalada libre",
+                        {% if  gymCalendar %}
+                            title: "Libre | {{climb.climber.first_name}} {{climb.climber.last_name}}",
+                        {% else %}
+                            title: "Escalada libre",
+                        {% endif %}
                         start: "{{ climb.date | date:'Y-m-d'}}T{{climb.begin_time | date:'G:i:s'}}",
                         end: "{{ climb.date | date:'Y-m-d'}}T{{climb.end_time | date:'G:i:s'}}",
+                        extendedProps: {
+                            type: "climb",
+                            climbers: {{climb.id}}
+                        }
                     },
                 {% endfor %}
             ],
             {% if gymCalendar %}
             eventClick: function(info) {
-                    fetch(`/lesson/${info.event.id}`)
+                    fetch(`/${info.event.extendedProps.type}/${info.event.id}`)
                     .then(response => response.json())
                     .then(data => {
                         console.log(data);
@@ -67,17 +76,27 @@
                         
                         lesson_info.querySelector(".card-subtitle").innerHTML = `${data.lessonDays} | ${data.begin_time} - ${data.end_time}`;
 
-                        lesson_info.querySelector(".card-text").innerHTML = "Students:<ul>"
-                        obj = data.climbers;
-                        for(var key in obj){
-                            if (obj.hasOwnProperty(key)){
-                                var value=obj[key];
-                                lesson_info.querySelector(".card-text").innerHTML += `<li>${value.first_name} ${value.last_name}</li>`;
+                        if(info.event.extendedProps.type === "lesson"){
+                            lesson_info.querySelector(".card-text").innerHTML = "Students:<ul>";
+                            obj = data.climbers;
+                            for(var key in obj){
+                                if (obj.hasOwnProperty(key)){
+                                    var value=obj[key];
+                                    lesson_info.querySelector(".card-text").innerHTML += `<li>${value.first_name} ${value.last_name}</li>`;
+                                }
                             }
-                        }
-                        lesson_info.querySelector(".card-text").innerHTML += "</ul>";
+                            lesson_info.querySelector(".card-text").innerHTML += "</ul>";
 
-                        lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Class date: ${data.class_date}</em>`;
+                            lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Class date: ${data.class_date}</em>`;
+                        }
+                        else{
+                            lesson_info.querySelector(".card-title").innerHTML = "Escalada libre"
+                            lesson_info.querySelector(".card-text").innerHTML = "Climber:<ul>";
+                            lesson_info.querySelector(".card-text").innerHTML += `<li>${data.climbers.first_name} ${data.climbers.last_name}</li>`;
+                            lesson_info.querySelector(".card-text").innerHTML += "</ul>";
+
+                            lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Climb date: ${data.class_date}</em>`;
+                        }
                     })
               },
             {% endif %}

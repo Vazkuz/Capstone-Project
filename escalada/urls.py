@@ -19,5 +19,6 @@ urlpatterns = [
     path("bookingSubmitted", views.bookingSubmitted, name="bookingSubmitted"),
     path("profile/<int:user_id>", views.profile, name="profile"),
     path("gymCalendar", views.gymCalendar, name="gymCalendar"),
-    path("lesson/<int:lesson_id>", views.lesson_view, name="lesson")
+    path("lesson/<int:lesson_id>", views.lesson_json, name="lesson"),
+    path("climb/<int:climb_id>", views.climb_json, name="climb")
 ]
