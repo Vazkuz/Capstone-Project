@@ -341,16 +341,17 @@ def profile(request, user_id):
     if user_id == request.user.id or request.user.is_superuser:
         profile_user = User.objects.get(pk=user_id)
         myLessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = datetime.today())
-        myEnrollments = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
+        myEnrollments_list = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
         remaining_classes = myLessons.values('climbClass').annotate(Count('climbClass'))
-        myEnrollments = zip(myEnrollments, remaining_classes)
+        myEnrollments = zip(myEnrollments_list, remaining_classes)
         nextLesson = myLessons.order_by("class_date").first()
         myCoupons = MyCoupon.objects.filter(climber = user_id)
         return render(request, "escalada/profile.html", {
             "profile_user": profile_user,
             "myCoupons": myCoupons,
             "nextLesson": nextLesson,
-            "myEnrollments": myEnrollments
+            "myEnrollments": myEnrollments,
+            "myEnrollments_length": len(myEnrollments_list)
         })
     else:
         return HttpResponseRedirect(reverse('index'))
