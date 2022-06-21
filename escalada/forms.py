@@ -128,7 +128,10 @@ class FreeClimbForm(forms.ModelForm):
         # A Free climb can't finish after the gym closes
         elif scheduleOfTheDay.filter(closing_hour__lte = end_time_of_climb).count() == scheduleOfTheDay.filter(opening_hour__lte = end_time_of_climb).count():
             raise ValidationError(f'This climb would at {end_time_of_climb}, after the gym had closed.')
-        # else:
+        
+        # Type of class of both climb and coupon must be the same
+        if cleaned_data.get('climbPassType') != cleaned_data.get('coupon').getclimbPassType():
+            raise ValidationError(f'The type of the class does not match the type of the coupon selected.')
             
         # if scheduleOfTheDay.filter(closing_hour__lt = end_time_of_climb) or (scheduleOfTheDay.filter(closing_hour__gt = end_time_of_climb) and end_time_of_climb < cleaned_data.get('begin_time')):
         #######################################################################################
