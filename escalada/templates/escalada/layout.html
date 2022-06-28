@@ -38,7 +38,7 @@
             </div>
             <ul class="nav-items">
                 {% if user.is_superuser %}
-                <li>
+                <li class="search-li">
                     <i class="fa-solid fa-magnifying-glass icon-search icon"></i>
                     <form action="{% url 'search' %}" method="post">
                         {% csrf_token %}

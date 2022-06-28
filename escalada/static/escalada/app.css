@@ -110,6 +110,11 @@ hr {
     color: black;
 }
 
+.search-li:hover{
+    transform: scale(1.05);
+    transition: var(--tran-01);
+}
+
 .nav-items li .icon-search{
     position: absolute;
     z-index: 5;
@@ -255,6 +260,7 @@ hr {
 
 
     /*======== Transition ========*/
+    --tran-01: all 0.1s ease;
     --tran-02: all 0.2s ease;
     --tran-03: all 0.3s ease;
     --tran-04: all 0.4s ease;
