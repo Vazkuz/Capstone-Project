@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Lesson, MyCoupon, User
-from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber
+from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber, SearchForm
 from datetime import datetime, date, time, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
@@ -16,7 +16,8 @@ from django.db.models import Count
 def index(request):
     availableClasses = ClimbClass.objects.filter(is_Available = True)
     return render(request, "escalada/index.html", {
-        "availableClasses": availableClasses
+        "availableClasses": availableClasses,
+        "form": SearchForm()
     })
 
 @staff_member_required(login_url=reverse_lazy('index'))
@@ -24,7 +25,8 @@ def createClass(request):
     newClassForm = ClimbClassForm()
     return render(request, "escalada/create_class.html", {
         "newClassForm": newClassForm,
-        "errorInCreation": False
+        "errorInCreation": False,
+        "form": SearchForm()
     })
     
 @staff_member_required(login_url=reverse_lazy('index'))
@@ -42,7 +44,9 @@ def newClass(request):
         if class_form.is_valid():
             newClass.save()
         else:
-            return render(request, "escalada/error_in_newclass.html")
+            return render(request, "escalada/error_in_newclass.html", {
+                "form": SearchForm()
+            })
         return HttpResponseRedirect(reverse("index"))
 
 def login_view(request):
@@ -98,7 +102,8 @@ def register(request):
 def enroll(request):
     enroll_form = LessonFormStudents(climberFilter=request.user)
     return render(request, "escalada/enroll.html", {
-        "enroll_form": enroll_form
+        "enroll_form": enroll_form,
+        "form": SearchForm()
     })
     
 @login_required
@@ -121,7 +126,8 @@ def enroll_success(request):
                 enroll_form = LessonFormStudents(climberFilter=request.user)
                 return render(request, "escalada/enroll.html", {
                     "enroll_form": enroll_form,
-                    "error_message": f"Error: You don't have a coupon for that class"
+                    "error_message": f"Error: You don't have a coupon for that class",
+                    "form": SearchForm()
                 })
                 
             # First check class availability (by number of students)
@@ -143,19 +149,22 @@ def enroll_success(request):
                                 enroll_form = LessonFormStudents(climberFilter=request.user)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
-                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
+                                    "form": SearchForm()
                                 })
                             elif todays_climbs.filter(begin_time__gt = begin_time) and todays_climbs.filter(begin_time__lt = begin_time_plus):
                                 enroll_form = LessonFormStudents(climberFilter=request.user)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
-                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
+                                    "form": SearchForm()
                                 })
                             elif todays_climbs.filter(begin_time__lt = begin_time) and todays_climbs.filter(begin_time__gt = begin_time_minus):
                                 enroll_form = LessonFormStudents(climberFilter=request.user)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
-                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar."
+                                    "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
+                                    "form": SearchForm()
                                 })
                         if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
                             enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
@@ -169,7 +178,8 @@ def enroll_success(request):
                 enroll_form = LessonFormStudents(climberFilter=request.user)
                 return render(request, "escalada/enroll.html", {
                     "enroll_form": enroll_form,
-                    "error_message": f"Error: You are already on that class"
+                    "error_message": f"Error: You are already on that class",
+                    "form": SearchForm()
                 })
             # If availability is 0, that means that there is room in the lesson for another climber
             if availability == 0:
@@ -184,20 +194,23 @@ def enroll_success(request):
             enroll_form = LessonFormStudents(climberFilter=request.user)
             return render(request, "escalada/enroll.html", {
                 "enroll_form": enroll_form,
-                "error_message": f"Error: Class is full until {newDayClass}"
+                "error_message": f"Error: Class is full until {newDayClass}",
+                "form": SearchForm()
             })
 
     enroll_form = LessonFormStudents(climberFilter=request.user)
     return render(request, "escalada/enroll.html", {
         "enroll_form": enroll_form,
-        "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0]
+        "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0],
+        "form": SearchForm()
     })
     
 @login_required
 def buyCoupon(request):
     buyForm = BuyCouponForm()
     return render(request, "escalada/buy_coupon.html", {
-        "buyForm": buyForm
+        "buyForm": buyForm,
+        "form": SearchForm()
     })
     
 @login_required
@@ -220,12 +233,14 @@ def buyCouponSubmit(request):
         if list(myCouponForm.errors.as_data()['__all__'][0])[0] == 'My coupon with this Climber and Coupon already exists.':
             return render(request, "escalada/buy_coupon.html", {
                 "buyForm": buyForm,
-                "error_message": "You already have that Coupon"
+                "error_message": "You already have that Coupon",
+                "form": SearchForm()
             })
         else:                    
             return render(request, "escalada/buy_coupon.html", {
                 "buyForm": buyForm,
-                "error_message": "Error: " + list(myCouponForm.errors.as_data()['__all__'][0])[0]
+                "error_message": "Error: " + list(myCouponForm.errors.as_data()['__all__'][0])[0],
+                "form": SearchForm()
             })
                     
     
@@ -237,14 +252,16 @@ def my_calendar(request):
     myClimbs = FreeClimb.objects.filter(climber = request.user)
     return render(request, "escalada/calendar.html",{
         "myLessons": myLessons,
-        "myClimbs": myClimbs
+        "myClimbs": myClimbs,
+        "form": SearchForm()
     })
 
 @login_required
 def bookAClimb(request):
     bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
     return render(request, "escalada/bookAClimb.html", {
-        "bookClimbForm": bookClimbForm
+        "bookClimbForm": bookClimbForm,
+        "form": SearchForm()
     })
     
 @login_required
@@ -274,45 +291,52 @@ def bookingSubmitted(request):
                     bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                     return render(request, "escalada/bookAClimb.html", {
                     "bookClimbForm": bookClimbForm,
-                    "error_message": f"Error: You can't book this climb because this hour is full (there are {maxClimbersForPassType} climbers)."
+                    "error_message": f"Error: You can't book this climb because this hour is full (there are {maxClimbersForPassType} climbers).",
+                    "form": SearchForm()
                     })
             if my_climbs_today.filter(begin_time = begin_time):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You have already booked for this hour."
+                "error_message": f"Error: You have already booked for this hour.",
+                "form": SearchForm()
                 })
             # A climber can't book a climb that conflicts with another free climb
             elif my_climbs_today.filter(begin_time__gt = begin_time) and my_climbs_today.filter(begin_time__lt = begin_time_plus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You can't book this climb, it starts just before the start of another climb you've already booked."
+                "error_message": f"Error: You can't book this climb, it starts just before the start of another climb you've already booked.",
+                "form": SearchForm()
                 })
             elif my_climbs_today.filter(begin_time__lt = begin_time) and my_climbs_today.filter(begin_time__gt = begin_time_minus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You can't book this climb, it starts just after the start of another climb you've already booked."
+                "error_message": f"Error: You can't book this climb, it starts just after the start of another climb you've already booked.",
+                "form": SearchForm()
                 })
             # Prevent conflicts: free climbs cannot conflict with classes
             elif my_lessons_today_bt.filter(begin_time = begin_time):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
+                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in.",
+                "form": SearchForm()
                 })
             elif my_lessons_today_bt.filter(begin_time__gt = begin_time) and my_lessons_today_bt.filter(begin_time__lt = begin_time_plus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
+                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in.",
+                "form": SearchForm()
                 })
             elif my_lessons_today_bt.filter(begin_time__lt = begin_time) and my_lessons_today_bt.filter(begin_time__gt = begin_time_minus):
                 bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                 return render(request, "escalada/bookAClimb.html", {
                 "bookClimbForm": bookClimbForm,
-                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in."
+                "error_message": f"Error: You can't book this climb because it conflicts with a class you are enrolled in.",
+                "form": SearchForm()
                 })
             else:                
                 # Check if the climber has the coupon
@@ -323,7 +347,8 @@ def bookingSubmitted(request):
                     bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
                     return render(request, "escalada/bookAClimb.html", {
                         "bookClimbForm": bookClimbForm,
-                        "error_message": f"Error: You don't have a coupon for that climb"
+                        "error_message": f"Error: You don't have a coupon for that climb",
+                        "form": SearchForm()
                     })
                     
                 newClimbBooked = FreeClimb(climber=climber, coupon = coupon, climbPassType=climbPassType_instance, date=date_ofClimb, begin_time= begin_time)
@@ -333,7 +358,8 @@ def bookingSubmitted(request):
     bookClimbForm = FreeClimbFormClimber(climberFilter=request.user)
     return render(request, "escalada/bookAClimb.html", {
         "bookClimbForm": bookClimbForm,
-        "error_message": "Error: " + list(booking_form.errors.as_data()['__all__'][0])[0]
+        "error_message": "Error: " + list(booking_form.errors.as_data()['__all__'][0])[0],
+        "form": SearchForm()
     })
 
 @login_required
@@ -351,7 +377,8 @@ def profile(request, user_id):
             "myCoupons": myCoupons,
             "nextLesson": nextLesson,
             "myEnrollments": myEnrollments,
-            "myEnrollments_length": len(myEnrollments_list)
+            "myEnrollments_length": len(myEnrollments_list),
+            "form": SearchForm()
         })
     else:
         return HttpResponseRedirect(reverse('index'))
@@ -367,7 +394,8 @@ def gymCalendar(request):
     return render(request, "escalada/calendar.html",{
         "myLessons": lessons,
         "myClimbs": climbs,
-        "gymCalendar": gymCalendar
+        "gymCalendar": gymCalendar,
+        "form": SearchForm()
     })
       
 @staff_member_required(login_url=reverse_lazy('index'))
@@ -381,6 +409,17 @@ def climb_json(request, climb_id):
     data=FreeClimb.objects.get(pk=climb_id).serialize()
     if request.method == 'GET':
         return JsonResponse(data)
+
+@staff_member_required(login_url=reverse_lazy('index'))
+def search(request):
+    if request.method == "POST":
+        search_form = SearchForm(request.POST)
+        if search_form.is_valid():
+            return render(request, 'escalada/search_climber.html', {
+                "search": search_form.cleaned_data["searchBox"]
+            })
+        return HttpResponseRedirect(reverse('index'))
+    return HttpResponseRedirect(reverse('index'))
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

@@ -37,6 +37,16 @@
                 <p style=""><em>Your climbing site!</em></p>
             </div>
             <ul class="nav-items">
+                {% if user.is_superuser %}
+                <li>
+                    <i class="fa-solid fa-magnifying-glass icon-search icon"></i>
+                    <form action="{% url 'search' %}" method="post">
+                        {% csrf_token %}
+                        {{ form }}
+                        {% comment %} <input type="text" placeholder="Search climber"> {% endcomment %}
+                    </form>
+                </li>
+                {% endif %}
                 <li>
                     <a href="{% url 'index' %}">
                         <i class="fa-solid fa-house icon"></i>

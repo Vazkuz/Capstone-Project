@@ -20,5 +20,6 @@ urlpatterns = [
     path("profile/<int:user_id>", views.profile, name="profile"),
     path("gymCalendar", views.gymCalendar, name="gymCalendar"),
     path("lesson/<int:lesson_id>", views.lesson_json, name="lesson"),
-    path("climb/<int:climb_id>", views.climb_json, name="climb")
+    path("climb/<int:climb_id>", views.climb_json, name="climb"),
+    path("search", views.search, name="search")
 ]
