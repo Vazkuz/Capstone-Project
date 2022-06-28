@@ -82,15 +82,46 @@ hr {
 }
 
 .nav-items li{
-    list-style-type: none;
-}
-
-.nav-items li{
+    display: flex;
     list-style-type: none;
     margin-bottom: 10px;
     font-size: 18px;
     height: 45px;
     width: 100%;
+    align-items: center;
+}
+
+#navBar ul li{
+    position: relative;
+}
+
+ input{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    border-radius: 12px;
+    outline: none;
+    border: none;
+    background: var(--secondary-color);
+    padding-left: 50px;
+    font-size: 18px;
+    color: black;
+}
+
+.nav-items li .icon-search{
+    position: absolute;
+    z-index: 5;
+    color: var(--primary-color);
+}
+
+.nav-items li .icon{
+    min-width: 60px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-items li a{
@@ -122,15 +153,7 @@ hr {
     text-decoration: none;
 }
 
-.nav-items li a .icon{
-    min-width: 60px;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-items > li:hover{
+.nav-items > li a:hover{
     cursor: pointer;
     transform: scale(1.05);
 }
