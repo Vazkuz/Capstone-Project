@@ -28,7 +28,11 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p align="center"><em>You don't have any coupons, <a href="{% url 'buyCoupon' %}">wanna buy one</a>?</em></p>
+                {% if is_my_profile %}
+                    <p align="center"><em>You don't have any coupons, <a href="{% url 'buyCoupon' %}">wanna buy one</a>?</em></p>
+                {% else %}
+                    <p align="center"><em>User has no coupons</em></p>
+                {% endif %}
             {% endif %}
     </div>
     <div class="my-enrollments">
@@ -49,7 +53,11 @@
             </div>
             <p align="center">Your next class is: {{nextLesson.class_date}} at {{nextLesson.climbClass.begin_time}}</p>
         {% else %}
-        <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
+        {% if is_my_profile %}
+            <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
+        {% else %}
+            <p align="center"><em>User is not enrolled in any class.</em></p>
+        {% endif %}
         {% endif %}
     </div>
 

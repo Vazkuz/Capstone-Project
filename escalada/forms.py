@@ -156,4 +156,4 @@ class WeekdayScheduleForm(forms.ModelForm):
         fields = '__all__'
         
 class SearchForm(forms.Form):
-    searchBox = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Search climber', 'class': 'search'}), label="")
+    searchBox = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Search climber', 'class': 'search'}), label="", max_length=50)

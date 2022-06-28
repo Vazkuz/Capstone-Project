@@ -11,6 +11,7 @@ from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponFo
 from datetime import datetime, date, time, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from django.db.models import Q
 
 # Create your views here.
 def index(request):
@@ -365,6 +366,9 @@ def bookingSubmitted(request):
 @login_required
 def profile(request, user_id):
     if user_id == request.user.id or request.user.is_superuser:
+        is_my_profile = True
+        if user_id != request.user.id:
+            is_my_profile = False
         profile_user = User.objects.get(pk=user_id)
         myLessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = datetime.today())
         myEnrollments_list = ClimbClass.objects.filter(pk__in = myLessons.values('climbClass').distinct())
@@ -378,6 +382,7 @@ def profile(request, user_id):
             "nextLesson": nextLesson,
             "myEnrollments": myEnrollments,
             "myEnrollments_length": len(myEnrollments_list),
+            "is_my_profile": is_my_profile,
             "form": SearchForm()
         })
     else:
@@ -415,8 +420,12 @@ def search(request):
     if request.method == "POST":
         search_form = SearchForm(request.POST)
         if search_form.is_valid():
+            search = search_form.cleaned_data["searchBox"]
+            results = User.objects.filter(Q(username__contains = search) | Q(first_name__contains = search) | Q(last_name__contains = search))
             return render(request, 'escalada/search_climber.html', {
-                "search": search_form.cleaned_data["searchBox"]
+                "search": search,
+                "results": results,
+                "form": SearchForm()
             })
         return HttpResponseRedirect(reverse('index'))
     return HttpResponseRedirect(reverse('index'))
