@@ -1,7 +1,14 @@
 {% extends 'escalada/layout.html' %}
 
 {% block body %}
-    <h1 id="profile-info">{{profile_user.first_name}} {{profile_user.last_name}}</h1>
+    <h1 id="profile-info">
+        {{profile_user.first_name}} {{profile_user.last_name}}
+        {% if request.user.is_superuser %}
+            <form action="{% url 'manage_climber' profile_user.id %}" class="manage-btn" style="display: inline-block">
+                <input type="submit" class="btn btn-primary" value="Manage class/climb">
+            </form>
+        {% endif %}
+    </h1>
     <hr>
     <div class="my-coupons">
         <h3 class="subtitle">My Coupons</h3>

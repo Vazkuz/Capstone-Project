@@ -421,7 +421,16 @@ def search(request):
         search_form = SearchForm(request.POST)
         if search_form.is_valid():
             search = search_form.cleaned_data["searchBox"]
-            results = User.objects.filter(Q(username__contains = search) | Q(first_name__contains = search) | Q(last_name__contains = search))
+            fn_search = search.split(' ', 1)[0]
+            try:
+                ln_search = search.split(' ', 1)[1]
+            except IndexError:
+                ln_search = '///////ººººº+++++'
+            results = User.objects.filter(Q(username__icontains = search) 
+                                          | Q(first_name__icontains = search) 
+                                          | Q(last_name__icontains = search) 
+                                          | Q(first_name__icontains = fn_search) 
+                                          | Q(last_name__icontains = ln_search))
             return render(request, 'escalada/search_climber.html', {
                 "search": search,
                 "results": results,
@@ -429,6 +438,30 @@ def search(request):
             })
         return HttpResponseRedirect(reverse('index'))
     return HttpResponseRedirect(reverse('index'))
+
+@staff_member_required(login_url=reverse_lazy('index'))
+def manage_climber(request, user_id):
+    profile_user = User.objects.get(pk=user_id)
+    future_climbs = FreeClimb.objects.filter(climber=user_id, date__gte = datetime.today())
+    return render(request, 'escalada/manage_climber.html', {
+        "future_climbs":future_climbs,
+        "profile_user": profile_user,
+        "form": SearchForm()
+    })
+
+@staff_member_required(login_url=reverse_lazy('index'))
+def cancel_climb(request, climb_id):
+    climb = FreeClimb.objects.get(pk=climb_id)
+    climber_id_number = climb.climber_id
+    climber_id = User.objects.get(pk=climb.climber_id)
+    try:
+        myCoupon = MyCoupon.objects.get(climber=climber_id, coupon=climb.coupon)
+    except ObjectDoesNotExist:
+        myCoupon = MyCoupon(climber=climber_id, coupon=climb.coupon, ticketsAvailable=0)
+    myCoupon.ticketsAvailable += 1
+    myCoupon.save()
+    FreeClimb.objects.get(pk=climb_id).delete()
+    return HttpResponseRedirect(reverse('manage_climber', args=(climber_id_number, )))
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:

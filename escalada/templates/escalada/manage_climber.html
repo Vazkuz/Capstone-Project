@@ -1,0 +1,18 @@
+{% extends 'escalada/layout.html' %}
+
+{% block body %}
+    <h1 id="profile-info">
+        {{profile_user.first_name}} {{profile_user.last_name}}
+        {% if request.user.is_superuser %}
+            <form action="{% url 'profile' profile_user.id %}" class="manage-btn" style="display: inline-block">
+                <input type="submit" class="btn btn-primary" value="Back to profile">
+            </form>
+        {% endif %}
+    </h1>
+    <hr>
+    <ul>
+        {% for climb in future_climbs %}
+            <li>Free climb {{climb.date}} at {{climb.begin_time}}. <a href="{% url 'cancel_climb' climb.id %}">Cancel climb</a></li>
+        {% endfor %}
+    </ul>
+{% endblock body %}

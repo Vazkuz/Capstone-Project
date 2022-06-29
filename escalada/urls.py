@@ -21,5 +21,7 @@ urlpatterns = [
     path("gymCalendar", views.gymCalendar, name="gymCalendar"),
     path("lesson/<int:lesson_id>", views.lesson_json, name="lesson"),
     path("climb/<int:climb_id>", views.climb_json, name="climb"),
-    path("search", views.search, name="search")
+    path("search", views.search, name="search"),
+    path("manage_climber/<int:user_id>", views.manage_climber, name="manage_climber"),
+    path("cancel_climb/<int:climb_id>", views.cancel_climb, name="cancel_climb")
 ]

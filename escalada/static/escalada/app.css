@@ -110,6 +110,10 @@ hr {
     color: black;
 }
 
+.manage-btn{
+    margin-left: 5px;
+}
+
 .search-li:hover{
     transform: scale(1.05);
     transition: var(--tran-01);
