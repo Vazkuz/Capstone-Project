@@ -205,9 +205,9 @@ def CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, cli
                                     "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
                                     "form": SearchForm()
                                 })
-                        if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
-                            enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
-                            if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [climber]).count() > 0:
+                        if Lesson.objects.filter(climbClass=climbClass, class_date=newDay).count() > 0:
+                            enrollment = Lesson.objects.get(climbClass=climbClass, class_date=newDay)
+                            if Lesson.objects.filter(climbClass=climbClass, class_date=newDay,climbers__in = [climber]).count() > 0:
                                 isClimberOnClass += 1
                             if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
                                 newDayClass = newDay.strftime("%d/%m/%Y")
@@ -499,9 +499,9 @@ def cancel_climb(request, climb_id):
 
 def EnrollToLesson(climbClass, coupon, class_date,climber):
     # Check if the enrollment already exists:
-    if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=class_date).count() > 0:
+    if Lesson.objects.filter(climbClass=climbClass, class_date=class_date).count() > 0:
         # If the class already exists, then the climber is added to that lesson:
-        enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=class_date)
+        enrollment = Lesson.objects.get(climbClass=climbClass, class_date=class_date)
         enrollment.climbers.add(climber)
     else:
         # If not, then the lesson is created and the climber enrolled to it
