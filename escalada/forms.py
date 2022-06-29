@@ -39,14 +39,15 @@ class LessonForm(forms.ModelForm):
         maxNumberOfClimbers = cleaned_data.get('coupon').getMaxClimbers()
         
         ##################################### VALIDATIONS #####################################
-        # The begin date has to be on a weekday of class
-        if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
-            raise ValidationError(f"Lesson days must be: {lessonDays}")
-        
-        # The begin date has to be set today or in the future, not in the past
-        if cleaned_data.get('begin_date') < dt.date.today():
-            raise ValidationError(f"Lessons can't be set in the past")
-        
+        if cleaned_data.get('begin_date'):
+            # The begin date has to be on a weekday of class
+            if cleaned_data.get('begin_date').strftime('%A').upper() not in str(lessonDays).upper():
+                raise ValidationError(f"Lesson days must be: {lessonDays}")
+            
+            # The begin date has to be set today or in the future, not in the past
+            if cleaned_data.get('begin_date') < dt.date.today():
+                raise ValidationError(f"Lessons can't be set in the past")
+            
         # There can't be more climbers than the maximum set for the class type
         if cleaned_data.get('climbers'):
             if cleaned_data.get('climbers').count() > maxNumberOfClimbers:
