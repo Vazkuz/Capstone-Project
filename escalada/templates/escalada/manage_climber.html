@@ -3,7 +3,13 @@
 
 {% block body %}
     <h1 id="profile-info">
-        {{profile_user.first_name}} {{profile_user.last_name}}
+        {% if profile_user.first_name and profile_user.last_name %}
+            {{profile_user.first_name}} {{profile_user.last_name}}
+        {% elif profile_user.first_name %}
+            {{profile_user.first_name}}
+        {% else %}
+            {{profile_user.username}}
+        {% endif %}
         {% if request.user.is_superuser %}
             <form action="{% url 'profile' profile_user.id %}" class="manage-btn" style="display: inline-block">
                 <input type="submit" class="btn btn-primary" value="Back to profile">
