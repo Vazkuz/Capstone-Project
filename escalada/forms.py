@@ -73,7 +73,13 @@ class LessonFormStudents(LessonForm):
         # Filter only the coupons the climber has
         if climberFilter:
             self.fields['coupon'].queryset = Coupon.objects.filter(pk__in = MyCoupon.objects.filter(climber=climberFilter).values('coupon'))
-        
+
+class PostponeLessonForm(forms.ModelForm):
+    begin_date = forms.DateField(widget=DateInput)
+    class Meta:
+        model = Lesson
+        fields = ('begin_date', )
+
 class CouponForm(forms.ModelForm):
     class Meta:
         model = Coupon

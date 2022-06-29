@@ -110,6 +110,11 @@ hr {
     color: black;
 }
 
+.climb-class-li{
+    margin-bottom: 10px;
+    list-style-type: none;
+}
+
 .manage-btn{
     margin-left: 5px;
 }

@@ -1,4 +1,5 @@
 {% extends 'escalada/layout.html' %}
+{% load static %}
 
 {% block body %}
     <h1 id="profile-info">
@@ -12,7 +13,21 @@
     <hr>
     <ul>
         {% for climb in future_climbs %}
-            <li>Free climb {{climb.date}} at {{climb.begin_time}}. <a href="{% url 'cancel_climb' climb.id %}">Cancel climb</a></li>
+            <li>Free climb {{climb.date}} at {{climb.begin_time}} <a href="{% url 'cancel_climb' climb.id %}">Cancel climb</a></li>
+        {% endfor %}
+        {% for lesson in future_lessons %}
+            <li>Lesson {{lesson.class_date}} at {{lesson.climbClass.begin_time}}
+                <a href="#" data-lesson={{lesson.id}} class="postpone-lesson-link">Postpone class</a>
+                <form action="{% url 'postpone_lesson' lesson.id profile_user.id %}" method='post' class="postpone-lesson-form" id="postpone-{{lesson.id}}">
+                    {{new_date_form}}
+                    {% csrf_token %}
+                    <input type = "submit" value="Postpone">
+                </form>
+            </li>
         {% endfor %}
     </ul>
 {% endblock body %}
+
+{% block script %}
+    <script src="{% static 'escalada/manage_climber.js' %}"></script>
+{% endblock %}

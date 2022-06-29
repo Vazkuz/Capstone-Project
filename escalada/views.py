@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import ClassType, ClimbClass, ClimbPassType, Coupon, FreeClimb, Lesson, MyCoupon, User
-from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber, SearchForm
+from .forms import ClimbClassForm, LessonFormStudents, BuyCouponForm, MyCouponForm, FreeClimbFormClimber, SearchForm, PostponeLessonForm
 from datetime import datetime, date, time, timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
@@ -131,7 +131,45 @@ def enroll_success(request):
                     "form": SearchForm()
                 })
                 
-            # First check class availability (by number of students)
+        render_v = CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, climber, climbClass, coupon)
+        
+        return render_v
+
+    enroll_form = LessonFormStudents(climberFilter=request.user)
+    return render(request, "escalada/enroll.html", {
+        "enroll_form": enroll_form,
+        "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0],
+        "form": SearchForm()
+    })
+
+@staff_member_required(login_url=reverse_lazy('index'))
+def postpone_lesson(request, lesson_id, user_id):
+    if request.method == 'POST':
+        postpone_lesson = PostponeLessonForm(request.POST)
+        if postpone_lesson.is_valid():
+            new_begin_date = postpone_lesson.cleaned_data['begin_date']
+            new_begin_date_DF = datetime.strptime(new_begin_date, '%Y-%m-%d')
+            profile_user = User.objects.get(pk=user_id)
+            current_class_date = Lesson.objects.get(pk=lesson_id).class_date
+            climbClass = Lesson.objects.get(pk=lesson_id).climbClass
+            next_lessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = current_class_date, climbClass = climbClass).order_by('class_date')
+            # render = CheckAvailAndEnroll(request, next_lessons.count(), lessonDays, new_begin_date_DF, profile_user, climbClass, coupon)
+    
+    
+    # for i in range(len(next_lessons)):
+    #     if i > 0:
+    #         next_lessons[i].climbers.remove(profile_user)
+
+    print("____________________________________________________________________________")
+    print(next_lessons)
+    print(next_lessons[0].climbers.all().count())
+    print(next_lessons.count())
+    print("____________________________________________________________________________")
+    # next_lessons.first().climbers.remove(profile_user)
+    return HttpResponseRedirect(reverse('manage_climber', args=(user_id, ))) 
+
+def CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, climber, climbClass, coupon):
+    # First check class availability (by number of students)
             availability = 0
             isClimberOnClass = 0
             climbClass_CLASS = ClimbClass.objects.filter(pk=climbClass)
@@ -147,21 +185,21 @@ def enroll_success(request):
                         todays_climbs = FreeClimb.objects.filter(climber=climber, date=newDay)
                         if todays_climbs.count() > 0:
                             if todays_climbs.filter(begin_time = begin_time):
-                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                enroll_form = LessonFormStudents(climberFilter=climber)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
                                     "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
                                     "form": SearchForm()
                                 })
                             elif todays_climbs.filter(begin_time__gt = begin_time) and todays_climbs.filter(begin_time__lt = begin_time_plus):
-                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                enroll_form = LessonFormStudents(climberFilter=climber)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
                                     "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
                                     "form": SearchForm()
                                 })
                             elif todays_climbs.filter(begin_time__lt = begin_time) and todays_climbs.filter(begin_time__gt = begin_time_minus):
-                                enroll_form = LessonFormStudents(climberFilter=request.user)
+                                enroll_form = LessonFormStudents(climberFilter=climber)
                                 return render(request, "escalada/enroll.html", {
                                     "enroll_form": enroll_form,
                                     "error_message": f"Error: You have a climb booked that conflicts with this class. Check your calendar.",
@@ -169,14 +207,14 @@ def enroll_success(request):
                                 })
                         if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay).count() > 0:
                             enrollment = Lesson.objects.get(climbClass=climbClass, coupon=coupon, class_date=newDay)
-                            if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [request.user]).count() > 0:
+                            if Lesson.objects.filter(climbClass=climbClass, coupon=coupon, class_date=newDay,climbers__in = [climber]).count() > 0:
                                 isClimberOnClass += 1
                             if enrollment.climbers.all().count() >= enrollment.getClimbClass().getClassType().getMaxClimbers():
                                 newDayClass = newDay.strftime("%d/%m/%Y")
                                 availability += 1
             # If isClimberOnClass > 0, that means the climber is already on that class for at least one of the days they are trying to enroll
             if isClimberOnClass > 0:
-                enroll_form = LessonFormStudents(climberFilter=request.user)
+                enroll_form = LessonFormStudents(climberFilter=climber)
                 return render(request, "escalada/enroll.html", {
                     "enroll_form": enroll_form,
                     "error_message": f"Error: You are already on that class",
@@ -192,20 +230,13 @@ def enroll_success(request):
                 UseTicket(climber, coupon)
                 return HttpResponseRedirect(reverse("index"))
             # If not, then the lesson is full
-            enroll_form = LessonFormStudents(climberFilter=request.user)
+            enroll_form = LessonFormStudents(climberFilter=climber)
             return render(request, "escalada/enroll.html", {
                 "enroll_form": enroll_form,
                 "error_message": f"Error: Class is full until {newDayClass}",
                 "form": SearchForm()
             })
-
-    enroll_form = LessonFormStudents(climberFilter=request.user)
-    return render(request, "escalada/enroll.html", {
-        "enroll_form": enroll_form,
-        "error_message": "Error: " + list(class_form.errors.as_data()['__all__'][0])[0],
-        "form": SearchForm()
-    })
-    
+            
 @login_required
 def buyCoupon(request):
     buyForm = BuyCouponForm()
@@ -443,9 +474,12 @@ def search(request):
 def manage_climber(request, user_id):
     profile_user = User.objects.get(pk=user_id)
     future_climbs = FreeClimb.objects.filter(climber=user_id, date__gte = datetime.today())
+    future_lessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = datetime.today()).order_by('class_date')
     return render(request, 'escalada/manage_climber.html', {
         "future_climbs":future_climbs,
         "profile_user": profile_user,
+        "future_lessons": future_lessons,
+        "new_date_form": PostponeLessonForm(),
         "form": SearchForm()
     })
 
@@ -477,11 +511,9 @@ def EnrollToLesson(climbClass, coupon, class_date,climber):
         newEnrollment.save()
         newEnrollment.climbers.add(climber)
 
-
 def UseTicket(climber, coupon):
     editMyCoupon = MyCoupon.objects.get(climber = climber, coupon=coupon)
     editMyCoupon.ticketsAvailable -= 1
     editMyCoupon.save()
     if editMyCoupon.ticketsAvailable <= 0:
         editMyCoupon.delete()
-    
