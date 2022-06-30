@@ -1,0 +1,18 @@
+{% extends 'escalada/layout.html' %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <div id="enroll">
+            <h3>Enroll to your climbing class here!</h3>
+            <form action="{% url 'enroll_success' %}" method='post'>
+                {{enroll_form}}
+                {% csrf_token %}
+                <input type = "submit" value="Enroll">
+            </form>
+            {% if error_message %}
+                <ul>
+                    <li>{{error_message}}</li>
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock body %}

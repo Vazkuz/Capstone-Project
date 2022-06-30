@@ -1,0 +1,277 @@
+body{
+    margin: 0;
+    margin-left: 250px;
+    padding: 15px 25px;
+}
+
+hr {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 96%;               
+    background-color: black;
+    height: 1px;
+  }
+
+.card-header-pass{
+    background-color: var(--coupon-header-color);
+}
+
+.card-header-class{
+    background-color: var(--class-header-color);
+}
+
+.card-header-class, .card-header-pass{
+    height: 15px;
+}
+
+.card-header-info{
+    height: 0px;
+    margin-top: 0px;
+    margin-bottom: 15px;
+}
+
+.subtitle{
+    text-align: center;
+}
+
+.coupons-container{
+    justify-content: center;
+    display:flex;
+    flex-wrap: wrap;
+}
+
+.border{    
+    display: inline-block;
+    margin: 35px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    min-width: 45rem;
+    text-align: center;
+}
+
+#calendar{
+    padding: 10px;
+    z-index: 1;
+}
+
+#escalada-brand{
+    font-size: 38px;
+}
+
+#navBar{
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    top: 0;
+    left: 0;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.nav-brand{
+    text-align: center;
+}
+
+.nav-items{
+    padding-inline-start: 0;
+}
+
+.nav-items li{
+    display: flex;
+    list-style-type: none;
+    margin-bottom: 10px;
+    font-size: 18px;
+    height: 45px;
+    width: 100%;
+    align-items: center;
+}
+
+#navBar ul li{
+    position: relative;
+}
+
+#navBar input{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    border-radius: 12px;
+    outline: none;
+    border: none;
+    background: var(--secondary-color);
+    padding-left: 50px;
+    font-size: 18px;
+    color: black;
+}
+
+.climb-class-li{
+    margin-bottom: 10px;
+    list-style-type: none;
+}
+
+.manage-btn{
+    margin-left: 5px;
+}
+
+.search-li:hover{
+    transform: scale(1.05);
+    transition: var(--tran-01);
+}
+
+.nav-items li .icon-search{
+    position: absolute;
+    z-index: 5;
+    color: var(--primary-color);
+}
+
+.nav-items li .icon{
+    min-width: 60px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-items li a{
+    height: 100%;
+    width: 100%;
+    border-radius: 6px;
+    display: flex;
+    text-align: left;
+    align-items: center;
+    color: var(--secondary-color);
+    transition: var(--tran-02);
+}
+
+.nav-items li a:hover{
+    text-decoration: none;
+    background-color: var(--hover-color);
+}
+
+.nav-items li .link-footer:hover{
+    text-decoration: none;
+    background-color: var(--login-out-color);
+}
+
+.fc-daygrid-day-number:hover, .fc-event:hover{
+    cursor: pointer;
+}
+
+.nav-items li a:active, .nav-items li a:link, .nav-items li a:visited {
+    text-decoration: none;
+}
+
+.nav-items > li a:hover{
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+.footer{
+    text-align: center;
+}
+
+#hamburgerBtn{
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    display: none;
+    z-index: 10;
+}
+
+.lesson-container{
+    z-index: 12;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.lesson-info{
+    border-radius: 15px;
+}
+
+.card-title{
+    text-align: center;
+}
+
+.lesson-info{
+    color: var(--secondary-color);
+}
+
+.lesson-info{
+    background-color: var(--primary-color);
+    position: absolute;
+
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+
+    margin: auto;
+    z-index: 15;
+}
+
+#hamburgerBtn:hover{
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 768px){
+    body{
+        margin-left: 0;
+    }
+
+    #profile-info{
+        text-align: center;
+    }
+
+    #navBar{
+        width: 45vw;
+        transform: translateX(-1000px);
+        transition: transform 500ms;
+        z-index: 5;
+    }
+
+    #navBar.open{
+        transform: translateX(0);
+    }
+
+    .nav-items > li{
+        text-align: center;
+        margin: auto;
+    }
+
+    #hamburgerBtn{
+        font-size: 20px;
+        display: inline-block;
+    }
+}
+
+
+:root{
+    /*======== Colors ========*/
+    --primary-color: #28727d;
+    --secondary-color: #ece2d6;
+    --hover-color: #33287d;
+    --login-out-color: #7d2848;
+    --coupon-header-color: #28487d;
+    /* --climb-class-color: #7d2872; */
+    --class-header-color: #5d287d;
+
+
+    /*======== Transition ========*/
+    --tran-01: all 0.1s ease;
+    --tran-02: all 0.2s ease;
+    --tran-03: all 0.3s ease;
+    --tran-04: all 0.4s ease;
+    --tran-05: all 0.5s ease;
+}

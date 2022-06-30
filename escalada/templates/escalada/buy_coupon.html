@@ -1,0 +1,17 @@
+{% extends 'escalada/layout.html' %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <div id="buy-coupon">
+            <form action="{% url 'buyCouponSubmit' %}" method='post'>
+                {{buyForm}}
+                {% csrf_token %}
+                <input type = "submit" value="Buy">
+            </form>
+            {% if error_message %}
+                <ul>
+                    <li>{{error_message}}</li>
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

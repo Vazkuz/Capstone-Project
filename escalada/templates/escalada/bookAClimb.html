@@ -1,0 +1,18 @@
+{% extends 'escalada/layout.html' %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <div id="bookAClimb">
+            <h3>Book a Climb</h3>
+            <form action="{% url 'bookingSubmitted' %}" method='post'>
+                {{bookClimbForm}}
+                {% csrf_token %}
+                <input type = "submit" value="Book">
+            </form>
+            {% if error_message %}
+                <ul>
+                    <li>{{error_message}}</li>
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock body %}

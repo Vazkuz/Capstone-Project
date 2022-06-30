@@ -1,0 +1,78 @@
+{% extends 'escalada/layout.html' %}
+
+{% block body %}
+    <h1 id="profile-info">
+        {% if profile_user.first_name and profile_user.last_name %}
+            {{profile_user.first_name}} {{profile_user.last_name}}
+        {% elif profile_user.first_name %}
+            {{profile_user.first_name}}
+        {% else %}
+            {{profile_user.username}}
+        {% endif %}
+        {% if request.user.is_superuser %}
+            <form action="{% url 'manage_climber' profile_user.id %}" class="manage-btn" style="display: inline-block">
+                <input type="submit" class="btn btn-primary" value="Manage class/climb">
+            </form>
+        {% endif %}
+    </h1>
+    <hr>
+    <div class="my-coupons">
+        <h3 class="subtitle">My Coupons</h3>
+            {% if myCoupons|length > 0 %}
+                <div class="coupons-container">
+                    {% for myCoupon in myCoupons %}
+                    <div class="border">
+                        {% if myCoupon.coupon.climbPassType %}
+                        <div class="card-header-pass"></div>
+                            <div class="card-body">
+                                <h4>{{myCoupon.coupon.climbPassType}}</h4>
+                                <p>Free climb coupon</p>
+                                <p>Number of tickets available: {{myCoupon.ticketsAvailable}}</p>
+                        {% else %}
+                        <div class="card-header-pass"></div>
+                            <div class="card-body">
+                                <h4>{{myCoupon.coupon.classType}}</h4>
+                                <p>Coupon available for {{myCoupon.coupon.numberOfWeeks}} weeks of class</p>
+                                <p>One-time use only</p>
+                        {% endif %}
+                                <p>Original price: S/ {{myCoupon.coupon.price}}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% if is_my_profile %}
+                    <p align="center"><em>You don't have any coupons, <a href="{% url 'buyCoupon' %}">wanna buy one</a>?</em></p>
+                {% else %}
+                    <p align="center"><em>{{profile_user}} has no coupons</em></p>
+                {% endif %}
+            {% endif %}
+    </div>
+    <div class="my-enrollments">
+        <h3 class='subtitle'>My Classes</h3>
+        {% if myEnrollments_length > 0 %}
+            <div class="coupons-container">
+                {% for myEnrollment, remaining_classes in myEnrollments %}
+                <div class="border">
+                    <div class="card-header-class"></div>
+                        <div class="card-body">
+                            <h4>{{myEnrollment.classType}}</h4>
+                            <p>Class days: {{myEnrollment.lessonDay}}</p>
+                            <p>Begin time: {{myEnrollment.begin_time}}</p>
+                            <p>Remaining classes: {{remaining_classes.climbClass__count}}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <p align="center">{% if is_my_profile %}Your{% else %}Their{% endif %} next class is: {{nextLesson.class_date}} at {{nextLesson.climbClass.begin_time}}</p>
+        {% else %}
+            {% if is_my_profile %}
+                <p align="center"><em>You are not enrolled in any class, <a href="{% url 'enroll' %}">wanna take a class</a>?</em></p>
+            {% else %}
+                <p align="center"><em>{{profile_user}} is not enrolled in any class.</em></p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock body %}
+

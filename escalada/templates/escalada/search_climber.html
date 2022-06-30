@@ -1,0 +1,12 @@
+{% extends 'escalada/layout.html' %}
+{% block body %}
+    <h2>Search results for "{{search}}"</h2>
+    <ul>
+        {% for result in results %}
+            <li><a href="{% url 'profile' result.id %}">{{result.first_name}} {{result.last_name}}</a></li>
+        {% empty %}
+            <p>There are no results for <em>{{search}}</em></p>
+        {% endfor %}
+    </ul>
+{% endblock body %}
+

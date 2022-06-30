@@ -1,52 +1,130 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <title>{% block title %}Escalada{% endblock %}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        {% comment %} <link href="{% static 'network/styles.css' %}" rel="stylesheet">
-        <script src="{% static 'network/index.js' %}"></script> {% endcomment %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
         <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
         <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://kit.fontawesome.com/4003520ad5.js" crossorigin="anonymous"></script>
-        {% comment %} <script src="jquery-3.6.0.min.js"></script> {% endcomment %}
+
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet"/>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="jquery-3.6.0.min.js"></script>
+        <script src="{% static 'escalada/layout.js' %}"></script>
+
+        <link rel="stylesheet" href="{% static 'escalada/app.css' %}">
+        <link href="{% static 'fullcalendar/lib/main.css' %}" rel='stylesheet'>
         {% block script %}
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            {% comment %} <a class="navbar-brand" href="#">Network</a> {% endcomment %}
-          
-            <div>
-              <ul class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
-                    {% comment %} <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile_page' user.id %}"><strong>{{ user.username }}</strong></a>
-                    </li> {% endcomment %}
-                {% endif %}
-                {% comment %} <li class="nav-item">
-                  <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li> {% endcomment %}
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
-                {% endif %}
-              </ul>
-            </div>
-          </nav>
-
         <div class="body">
             {% block body %}
             {% endblock %}
         </div>
+        <span id="hamburgerBtn">&#9776</span>
+        <nav id="navBar">
+            <div class="nav-brand">
+                <p id="escalada-brand">Escalada</p>
+                <p style=""><em>Your climbing site!</em></p>
+            </div>
+            <ul class="nav-items">
+                {% if user.is_superuser %}
+                <li class="search-li">
+                    <i class="fa-solid fa-magnifying-glass icon-search icon"></i>
+                    <form action="{% url 'search' %}" method="post">
+                        {% csrf_token %}
+                        {{ form }}
+                        {% comment %} <input type="text" placeholder="Search climber"> {% endcomment %}
+                    </form>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'index' %}">
+                        <i class="fa-solid fa-house icon"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'profile' user.id %}">
+                        <i class="fa-solid fa-user icon"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'my_calendar' %}">
+                        <i class="fa-regular fa-calendar-check icon"></i>
+                        <span>My Calendar</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'buyCoupon' %}">
+                        <i class="fa-regular fa-credit-card icon"></i>
+                        <span>Buy a Coupon</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'enroll' %}">
+                        <i class="fa-solid fa-pen icon"></i>
+                        <span>Enroll</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'bookAClimb' %}">
+                        <i class="fa-solid fa-bookmark icon"></i>
+                        <span>Book a Climb</span>
+                    </a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="link-footer" href="{% url 'login' %}">
+                        <i class="fa-solid fa-right-to-bracket icon"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="link-footer" href="{% url 'register' %}">
+                        <i class="fa-solid fa-user-plus icon"></i>
+                        <span>Register</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% if user.is_superuser %}
+                <li>
+                    <a href="{% url 'gymCalendar' %}">
+                        <i class="fa-solid fa-calendar-plus icon"></i>
+                        <span>Gym Calendar</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'createClass' %}">
+                        <i class="fa-solid fa-circle-plus icon"></i>
+                        <span>Create a Class</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            <div class="footer">
+                <ul class="nav-items">
+                    {% if user.is_authenticated %}
+                        <li>
+                            <a class="link-footer" href="{% url 'logout' %}">
+                                <i class="fa-solid fa-right-from-bracket icon"></i>
+                                <span>Log out</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
     </body>
 </html>

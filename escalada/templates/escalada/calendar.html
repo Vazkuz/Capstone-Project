@@ -1,0 +1,130 @@
+{% extends 'escalada/layout.html' %}
+{% load static %}
+{% load tz %}
+
+{% block script %}
+    <meta charset='utf-8' />
+    <script src="{% static 'fullcalendar/lib/main.js' %}"></script>
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var lesson_container = document.querySelector('.lesson-container');
+        lesson_container.onclick = e => {
+            if(e.target === e.currentTarget){
+                if (window.getComputedStyle(lesson_container, null).display == 'none'){
+                    lesson_container.setAttribute("style", "display: inline;");
+                }
+                else{
+                    lesson_container.setAttribute("style", "display: none;");
+                }
+            }
+        }
+
+        var lesson_info = document.querySelector('.lesson-info');
+        var calendarEl = document.getElementById('calendar');
+        var navBarWidth = document.querySelector('#navBar').offsetWidth;
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            selectable: true,
+            events: [
+                {% for lesson in myLessons %}
+                    {
+                        id: {{lesson.id}},
+                        title: "Clase de escalada",
+                        start: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.begin_time | date:'G:i:s'}}",
+                        end: "{{ lesson.class_date | date:'Y-m-d'}}T{{lesson.climbClass.end_time | date:'G:i:s'}}",
+                        extendedProps: {
+                            type: "lesson",
+                            climbers: {{lesson.id}}
+                        }
+                    },
+                {% endfor %}
+                {% for climb in myClimbs %}
+                    {
+                        id: {{climb.id}},
+                        {% if  gymCalendar %}
+                            title: "Libre | {{climb.climber.first_name}} {{climb.climber.last_name}}",
+                        {% else %}
+                            title: "Escalada libre",
+                        {% endif %}
+                        start: "{{ climb.date | date:'Y-m-d'}}T{{climb.begin_time | date:'G:i:s'}}",
+                        end: "{{ climb.date | date:'Y-m-d'}}T{{climb.end_time | date:'G:i:s'}}",
+                        extendedProps: {
+                            type: "climb",
+                            climbers: {{climb.id}}
+                        }
+                    },
+                {% endfor %}
+            ],
+            {% if gymCalendar %}
+            eventClick: function(info) {
+                    fetch(`/${info.event.extendedProps.type}/${info.event.id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (window.getComputedStyle(lesson_container, null).display == 'none'){
+                            lesson_container.setAttribute("style", "display: inline;");
+                        }
+                        else{
+                            lesson_container.setAttribute("style", "display: none;");
+                        }
+                        
+                        lesson_info.querySelector(".card-subtitle").innerHTML = `${data.lessonDays} | ${data.begin_time} - ${data.end_time}`;
+
+                        if(info.event.extendedProps.type === "lesson"){
+                            lesson_info.querySelector(".card-title").innerHTML = "Clase de escalada"
+                            lesson_info.querySelector(".card-text").innerHTML = "Students:<ul>";
+                            obj = data.climbers;
+                            for(var key in obj){
+                                if (obj.hasOwnProperty(key)){
+                                    var value=obj[key];
+                                    lesson_info.querySelector(".card-text").innerHTML += `<li>${value.first_name} ${value.last_name}</li>`;
+                                }
+                            }
+                            lesson_info.querySelector(".card-text").innerHTML += "</ul>";
+
+                            lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Class date: ${data.class_date}</em>`;
+                        }
+                        else{
+                            lesson_info.querySelector(".card-title").innerHTML = "Escalada libre"
+                            lesson_info.querySelector(".card-text").innerHTML = "Climber:<ul>";
+                            lesson_info.querySelector(".card-text").innerHTML += `<li>${data.climbers.first_name} ${data.climbers.last_name}</li>`;
+                            lesson_info.querySelector(".card-text").innerHTML += "</ul>";
+
+                            lesson_info.querySelector(".card-info-footer").innerHTML = `<em>Climb date: ${data.class_date}</em>`;
+                        }
+                    })
+              },
+            {% endif %}
+            dateClick: function(info) {
+                calendar.gotoDate(info.date);
+                calendar.changeView('timeGridDay');
+            }
+            
+        });
+        calendar.render();
+    });
+
+    </script>
+{% endblock script %}
+{% block body %}
+    <div class="lesson-container" style="display: none;">
+        <div class="lesson-info card">
+            <div class="card-body">
+                <h5 class="card-title">Clase de escalada</h5>
+                <div class="card-header-info"></div>
+                <h6 class="card-subtitle">Card subtitle</h6>
+                <div class="card-header-info"></div>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <p class="card-info-footer">Class footer</p>
+            </div>
+        </div>
+    </div>
+    <div id='calendar' class="container">
+
+    </div>
+{% endblock body %}

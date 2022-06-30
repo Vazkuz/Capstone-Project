@@ -26,7 +26,7 @@ SECRET_KEY = config("SECRET_KEY") # this is to replace the secret key you cut aw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'multiselectfield',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [
+    'escalada.middleware.PruebaMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
