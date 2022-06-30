@@ -22,7 +22,7 @@
             <li>Free climb {{climb.date}} at {{climb.begin_time}} <a href="{% url 'cancel_climb' climb.id %}">Cancel climb</a></li>
         {% endfor %}
         {% for lesson in future_lessons %}
-            <li>Lesson {{lesson.class_date}} at {{lesson.climbClass.begin_time}}
+            <li>Lesson {{lesson.class_date}} at {{lesson.climbClass.begin_time}} - {{lesson.climbClass.lessonDay}}
                 <a href="#" data-lesson={{lesson.id}} class="postpone-lesson-link">Postpone class</a>
                 <form action="{% url 'postpone_lesson' lesson.id profile_user.id %}" method='post' class="postpone-lesson-form" id="postpone-{{lesson.id}}">
                     {{new_date_form}}
