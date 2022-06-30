@@ -148,27 +148,36 @@ def postpone_lesson(request, lesson_id, user_id):
         postpone_lesson = PostponeLessonForm(request.POST)
         if postpone_lesson.is_valid():
             new_begin_date = postpone_lesson.cleaned_data['begin_date']
-            new_begin_date_DF = datetime.strptime(new_begin_date, '%Y-%m-%d')
+            # new_begin_date_DF = datetime.strptime(new_begin_date, '%Y-%m-%d')
             profile_user = User.objects.get(pk=user_id)
             current_class_date = Lesson.objects.get(pk=lesson_id).class_date
+            coupon = Lesson.objects.get(pk=lesson_id).coupon.id
             climbClass = Lesson.objects.get(pk=lesson_id).climbClass
+            lessonDays = climbClass.getLessonDays()
             next_lessons = Lesson.objects.filter(climbers__in = [profile_user], class_date__gte = current_class_date, climbClass = climbClass).order_by('class_date')
-            # render = CheckAvailAndEnroll(request, next_lessons.count(), lessonDays, new_begin_date_DF, profile_user, climbClass, coupon)
-    
-    
-    # for i in range(len(next_lessons)):
-    #     if i > 0:
-    #         next_lessons[i].climbers.remove(profile_user)
-
-    print("____________________________________________________________________________")
-    print(next_lessons)
-    print(next_lessons[0].climbers.all().count())
-    print(next_lessons.count())
-    print("____________________________________________________________________________")
-    # next_lessons.first().climbers.remove(profile_user)
+            numberOfLessons = next_lessons.count()
+            
+            # First: remove climber from future lessons
+            print("____________________________________________________________________________")
+            print(lesson_id)
+            print(next_lessons)
+            print(coupon)
+            print(climbClass.getLessonDays())
+            print("____________________________________________________________________________")
+            for next_lesson in next_lessons:
+                next_lesson.climbers.remove(profile_user)
+                    
+            # Then add them to new lessons
+            render_v = CheckAvailAndEnroll(request, numberOfLessons, lessonDays, new_begin_date, profile_user, climbClass.id, coupon, False)
+            
+            for next_lesson in next_lessons:
+                if next_lesson.climbers.count() == 0:
+                    next_lesson.delete()
+            if render_v != False:
+                return render_v
     return HttpResponseRedirect(reverse('manage_climber', args=(user_id, ))) 
 
-def CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, climber, climbClass, coupon):
+def CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, climber, climbClass, coupon, use_ticket = True):
     # First check class availability (by number of students)
             availability = 0
             isClimberOnClass = 0
@@ -227,8 +236,10 @@ def CheckAvailAndEnroll(request, numberOfLessons, lessonDays, begin_date_DF, cli
                         newDay = begin_date_DF + timedelta(days=i*7+j)
                         if newDay.strftime('%A').upper() in str(lessonDays).upper():
                             EnrollToLesson(climbClass, coupon, newDay, climber)
-                UseTicket(climber, coupon)
-                return HttpResponseRedirect(reverse("index"))
+                if use_ticket:
+                    UseTicket(climber, coupon)
+                    return HttpResponseRedirect(reverse("index"))
+                return False
             # If not, then the lesson is full
             enroll_form = LessonFormStudents(climberFilter=climber)
             return render(request, "escalada/enroll.html", {
